@@ -17,3 +17,7 @@ Token::Token(TokenType type, string name, int id) {
     this->id = id;
 }
 
+void Token::print() {
+    cout << type << "\t" << name << "\t" << id;
+}
+

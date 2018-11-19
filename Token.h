@@ -29,5 +29,6 @@ public:
     int id;
     Token();
     Token(TokenType type, string name, int id);
+    void print();
 };
 #endif //COMPILER_TOKEN_H
