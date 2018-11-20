@@ -18,7 +18,6 @@ void Scanner::scan(string filename) {
         cout << "open Error" << endl;
     }
     while ((curChar = static_cast<char>(getc(fp))) != '#') {
-        cout << curChar << endl;
         if(curChar == '\n' || curChar == '\t' || curChar == ' ' || curChar == '\r') {
             tokenGenerate(state, buffer);
             pos = 0;
@@ -39,6 +38,7 @@ void Scanner::scan(string filename) {
 }
 
 void Scanner::tokenGenerate(int state_before, string buffer) {
+    if(buffer == "*") cout << encoder(state_before) << endl;
     string code = encoder(state_before);
     Token token;
     if(code == "k") {
@@ -80,6 +80,7 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
         token.type = STRCONST;
         tokenVec.push_back(token);
     } else if(code == "p") {
+        if(buffer == "*")  cout << delimiterTable.getID(buffer) << endl;
         token.id = delimiterTable.getID(buffer);
         token.name = buffer;
         token.type = DELIMTER;
@@ -108,7 +109,7 @@ string Scanner::encoder(int state) {
     finalState[21] = "p";
     finalState[24] = "p";
     for(int i = 25; i <= 42; i++) {
-        finalState[25] = "p";
+        finalState[i] = "p";
     }
     return finalState[state];
 }
@@ -124,7 +125,7 @@ void Scanner::showLex() {
     freopen("../lex.txt", "w", stdout);
     cout << "\t\t词法分析结果\t\t" << endl;
     for(auto val : tokenVec) {
-        cout << "\t "<< val.name << "\t" << numToName(val.type) << "\t" << val.id << endl;
+        cout << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id << endl;
     }
 }
 string Scanner::numToName(int num) {
