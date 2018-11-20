@@ -7,8 +7,9 @@
 
 #include <bits/stdc++.h>
 #include "Token.h"
-#include "Automatic.h"
 #include "TypeTable.h"
+#include "Automatic.h"
+#include "utils.cpp"
 using namespace std;
 
 class Scanner {
@@ -22,10 +23,12 @@ private:
     StringTable stringTable;
     vector<Token> tokenVec;
 public:
-    Scanner() = default;
     void scan(string filename);
     void tokenGenerate(int state_before, string buffer);
     string encoder(int state);
+    void reset(FILE* fp, int& state, int& pos, string& buffer);
+    void showLex();
+    string numToName(int num);
 };
 
 

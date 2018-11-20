@@ -14,52 +14,38 @@ public:
     KeyWordTable();
 };
 
-KeyWordTable::KeyWordTable() {
-    vector<string> keyWord = {"int", "main", "void", "if",
-                      "else", "char", "double", "float",
-                      "while", "for", "do", "break", "struct",
-                      "long", "bool", "return", "function", "use"};
-    for(auto c : keyWord) {
-        tokenTable.push_back(c);
-        index[c] = static_cast<int>(tokenTable.size());
-    }
-}
 
 
 class IdentiferTable : public Table<string> {
+public:
     IdentiferTable() = default;
 };
 
 
 
 class DelimiterTable : public Table<string> {
+public:
     DelimiterTable();
 };
 
-DelimiterTable::DelimiterTable() {
-    vector<string> delimter = {"+", "-", "*", ",", ".", "(", ")", "[", "]", "{", "}", ";",
-                         ">>", ">=", "<<", "<=", "<", "==", "=" ,"++", "+=", "--", "-=",
-                         "&=", "&&", "&", "|=", "||", "|", "^", "^=", "!", "!=", "%",
-                         "%=", "*", "*=", "/", "/="};
-    for(auto ch : delimter) {
-        tokenTable.push_back(ch);
-        index[ch] = static_cast<int>(tokenTable.size());
-    }
-}
 
 class IntTable : public Table<int> {
+public:
     IntTable() = default;
 };
 
-class FloatTable : public Table<int> {
+class FloatTable : public Table<double > {
+public:
     FloatTable() = default;
 };
 
-class CharTable : public Table<int> {
+class CharTable : public Table<char > {
+public:
     CharTable() = default;
 };
 
-class StringTable : public  Table<string> {
+class StringTable : public  Table<string > {
+public:
     StringTable() = default;
 };
 

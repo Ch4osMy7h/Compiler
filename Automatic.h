@@ -5,8 +5,8 @@
 #ifndef COMPILER_AUTOMATIC_H
 #define COMPILER_AUTOMATIC_H
 
-#include <bits/stdc++.h>
 
+#include <bits/stdc++.h>
 using namespace std;
 const int stateNum = 70;
 
