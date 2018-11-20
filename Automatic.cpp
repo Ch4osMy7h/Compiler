@@ -14,7 +14,6 @@ void Automatic::init() {
     fillState(1, '>', 4);
     fillState(1, '<', 5);
     fillState(1, '=', 6);
-    fillDelimter(1, 18);
     fillState(1, '+', 21);
     fillState(1, '-', 24);
     fillState(1, '&', 27);
@@ -24,6 +23,7 @@ void Automatic::init() {
     fillState(1, '%', 37);
     fillState(1, '*', 39);
     fillState(1, '/', 41);
+    fillDelimter(1, 18);
     // state 2
     fillChars(2, 2);
     fillNum(2, 2);
@@ -75,6 +75,7 @@ void Automatic::init() {
     //state 20
     fillAll(20, 0);
     // state 21
+    fillAll(21, 0);
     fillState(21, '+', 22);
     fillState(21, '=', 23);
     // state 22
@@ -82,6 +83,7 @@ void Automatic::init() {
     // state 23
     fillAll(23, 0);
     // state 24
+    fillAll(24, 0);
     fillState(24, '-', 25);
     fillState(24, '=', 26);
     // state 25
@@ -152,8 +154,7 @@ void Automatic::fillState(int from, char val, int to) {
 }
 
 void Automatic::fillDelimter(int from, int to) {
-    //加入了\n', '\t', 空格
-    vector<char> delimter = {'+', '-', '*', ',', '.', '(', ')', '[', ']', '{', '}', ';'};
+    vector<char> delimter = {',', '(', ')', '[', ']', '{', '}', ';'};
     for(auto c : delimter) {
         ac[from][c] = to;
     }

@@ -3,7 +3,7 @@
 	 node	identifer	1
 	 {	delimter	10
 	 int	keyword	1
-	 a  identifer	2
+	 a	identifer	2
 	 [	delimter	8
 	 2	int	1
 	 ]	delimter	9
@@ -40,6 +40,7 @@
 	 ppd	identifer	11
 	 =	delimter	19
 	 x	identifer	12
+	 +	delimter	1
 	 y	identifer	13
 	 ;	delimter	12
 	 return	keyword	16
@@ -84,6 +85,7 @@
 	 5	int	8
 	 (	delimter	6
 	 2	int	9
+	 +	delimter	1
 	 3	int	10
 	 )	delimter	7
 	 ;	delimter	12
@@ -125,6 +127,7 @@
 	 [	delimter	8
 	 3	int	16
 	 ]	delimter	9
+	 +	delimter	1
 	 1	int	17
 	 )	delimter	7
 	 <	delimter	17

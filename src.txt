@@ -5,7 +5,7 @@ struct node{
 function int func1(int x;int y;)
 {
     int ppd;
-    ppd = x+y;
+    ppd=x+y;
 	return pdd;
 }
 int main(){
@@ -37,14 +37,3 @@ int main(){
 	return 0;
 }
 #
-
-
-IDENTIFIER = 1,
-    INTCONST = 2,
-    FLOATCONST = 3,
-    DELIMTER = 4,
-    KEYWORD = 5,
-    CHARCONST = 6,
-    STRCONST = 7,
-    END = 0,
-    ERROR = -1

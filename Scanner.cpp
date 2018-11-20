@@ -18,6 +18,7 @@ void Scanner::scan(string filename) {
         cout << "open Error" << endl;
     }
     while ((curChar = static_cast<char>(getc(fp))) != '#') {
+        cout << curChar << endl;
         if(curChar == '\n' || curChar == '\t' || curChar == ' ' || curChar == '\r') {
             tokenGenerate(state, buffer);
             pos = 0;
@@ -104,6 +105,8 @@ string Scanner::encoder(int state) {
     finalState[18] = "p";
     finalState[22] = "p";
     finalState[23] = "p";
+    finalState[21] = "p";
+    finalState[24] = "p";
     for(int i = 25; i <= 42; i++) {
         finalState[25] = "p";
     }
