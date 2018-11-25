@@ -9,8 +9,19 @@ int main(void) {
     /*
      * 词法分析结果的输出
      */
-    Scanner sc;
+    KeyWordTable keyWordTable;
+    IdentiferTable identiferTable;
+    DelimiterTable delimiterTable;
+    IntTable intTable;
+    FloatTable floatTable;
+    CharTable charTable;
+    StringTable stringTable;
+    SymbolTable symbolTable;
+    vector<Token> tokenVec;
+    Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
     sc.scan("src.txt");
-    sc.showLex();
+    //sc.showLex();
+    //cout << tokenVec.size() << endl;
+    symbolTable.print();
     return 0;
 }

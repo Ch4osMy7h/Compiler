@@ -38,7 +38,6 @@ void Scanner::scan(string filename) {
 }
 
 void Scanner::tokenGenerate(int state_before, string buffer) {
-    if(buffer == "*") cout << encoder(state_before) << endl;
     string code = encoder(state_before);
     Token token;
     if(code == "k") {
@@ -53,6 +52,7 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
             token.name = buffer;
             token.type = IDENTIFIER;
             tokenVec.push_back(token);
+            symbolTable.entry(buffer, -1, Catgory::None, -1);
         }
     } else if(code == "int") {
         int num = string2num<int >(buffer);
@@ -80,7 +80,6 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
         token.type = STRCONST;
         tokenVec.push_back(token);
     } else if(code == "p") {
-        if(buffer == "*")  cout << delimiterTable.getID(buffer) << endl;
         token.id = delimiterTable.getID(buffer);
         token.name = buffer;
         token.type = DELIMTER;
@@ -139,4 +138,8 @@ string Scanner::numToName(int num) {
     changeTable[7] = "string";
     return changeTable[num];
 }
+
+
+Scanner::Scanner(KeyWordTable &kt, IdentiferTable &it, DelimiterTable &dt, IntTable &inta, FloatTable &ft, CharTable &ct,
+                 StringTable &st, vector<Token>& tv, SymbolTable& syt) : keyWordTable(kt), identiferTable(it), delimiterTable(dt), intTable(inta), floatTable(ft), charTable(ct), stringTable(st), tokenVec(tv), symbolTable(syt){}
 

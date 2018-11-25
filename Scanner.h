@@ -10,19 +10,23 @@
 #include "TypeTable.h"
 #include "Automatic.h"
 #include "utils.cpp"
+#include "SymbolTable.h"
 using namespace std;
 
 class Scanner {
 private:
-    KeyWordTable keyWordTable;
-    IdentiferTable identiferTable;
-    DelimiterTable delimiterTable;
-    IntTable intTable;
-    FloatTable floatTable;
-    CharTable charTable;
-    StringTable stringTable;
-    vector<Token> tokenVec;
+    KeyWordTable& keyWordTable;
+    IdentiferTable& identiferTable;
+    DelimiterTable& delimiterTable;
+    IntTable& intTable;
+    FloatTable& floatTable;
+    CharTable& charTable;
+    StringTable& stringTable;
+    vector<Token>& tokenVec;
+    SymbolTable& symbolTable;
+
 public:
+    Scanner(KeyWordTable & kt, IdentiferTable& it, DelimiterTable& dt, IntTable & inta, FloatTable& ft, CharTable& ct, StringTable& st, vector<Token>& tokenVec, SymbolTable& syt);
     void scan(string filename);
     void tokenGenerate(int state_before, string buffer);
     string encoder(int state);
