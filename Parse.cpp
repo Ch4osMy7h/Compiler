@@ -41,7 +41,7 @@ void Parse::Struct() {
     if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["struct"]) {
         curIndex++;
         if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
-            
+
         } else {
             cout << "the Sturct Define need an identifer" << endl;
         }
@@ -57,7 +57,7 @@ void Parse::FunctionSon() {
 
 void Parse::FuncitionDataType() {
     cout << "entry FunctionDatatype" << endl;
-    if()  {
+    if(this)  {
         FuncitionDataType();
     }
 }
