@@ -22,8 +22,8 @@ void Parse::START() {
 }
 
 void Parse::S() {
-    Function();
     Struct();
+    Function();
     Mainfunc();
 }
 
@@ -40,7 +40,11 @@ void Parse::Function() {
 void Parse::Struct() {
     if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["struct"]) {
         curIndex++;
-        if(tokenVec[curIndex].id ) {}
+        if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+            
+        } else {
+            cout << "the Sturct Define need an identifer" << endl;
+        }
     }
 }
 

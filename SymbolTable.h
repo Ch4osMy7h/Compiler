@@ -17,6 +17,17 @@ enum Catgory {
     None = 3
 };
 
+
+enum Type {
+    ArrayType = 1;
+    StructType = 2;
+    IntType = 3;
+    CharType = 4;
+    BoolType = 5;
+    FloatType = 6;
+    DoubleType = 7;
+};
+
 struct SymbolEntry {
     string name;
     int type;
@@ -24,6 +35,36 @@ struct SymbolEntry {
     int addr;
     //bool isActive;
 };
+
+struct TypeTable {
+    Type type;
+    int TPoint; // 0 == null , 1 == array, 2 == struct
+};
+
+struct ArrayTable {
+    int low = 0;
+    int up;
+    int ctp, clen;
+};
+
+struct StructTable {
+    string name;
+    int off;
+    vector<int> tp;
+};
+
+
+struct FunctionTable
+{
+    int level
+    int paraNum;
+    int returnType;
+    vector<int> para;
+};
+
+
+
+
 
 class SymbolTable : public Table<SymbolEntry> {
 public:
