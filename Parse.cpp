@@ -57,7 +57,7 @@ void Parse::FunctionSon() {
 
 void Parse::FuncitionDataType() {
     cout << "entry FunctionDatatype" << endl;
-    if()  {
+    if(this)  {
         FuncitionDataType();
     }
 }
