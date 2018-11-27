@@ -1,7 +1,7 @@
 # Course Design of Compiling
 ## To Do List
 ### Front-End
-- [ ] Lexical analysis
+- [X] Lexical analysis
 - [ ] Parsing
 - [ ] Semantic Analysis
 
