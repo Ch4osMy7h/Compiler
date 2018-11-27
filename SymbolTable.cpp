@@ -28,3 +28,5 @@ void SymbolTable::print() {
 bool operator<(const SymbolEntry &ls, const SymbolEntry &rs) {
     return ls.name < rs.name;
 }
+
+

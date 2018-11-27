@@ -19,13 +19,13 @@ enum Catgory {
 
 
 enum Type {
-    ArrayType = 1;
-    StructType = 2;
-    IntType = 3;
-    CharType = 4;
-    BoolType = 5;
-    FloatType = 6;
-    DoubleType = 7;
+    ArrayType = 1,
+    StructType = 2,
+    IntType = 3,
+    CharType = 4,
+    BoolType = 5,
+    FloatType = 6,
+    DoubleType = 7
 };
 
 struct SymbolEntry {
@@ -47,7 +47,7 @@ struct ArrayTable {
     int ctp, clen;
 };
 
-struct StructTable {
+struct StructTableVal {
     string name;
     int off;
     vector<int> tp;
@@ -56,18 +56,25 @@ struct StructTable {
 
 struct FunctionTable
 {
-    int level
+    int level;
     int paraNum;
     int returnType;
     vector<int> para;
 };
+
+typedef vector<StructTableVal> StructTableEntry;
+
 
 
 
 
 
 class SymbolTable : public Table<SymbolEntry> {
+private:
+    vector<StructTableEntry> StructTable;
+
 public:
+    void fillStructVal(string name);
     void entry(string n, int type, Catgory c, int addr);
     void print();
     friend bool operator<(const SymbolEntry &ls, const SymbolEntry &rs);

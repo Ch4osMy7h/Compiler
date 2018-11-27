@@ -41,10 +41,33 @@ public:
     void S();
     void Function();
     void FunctionSon();
-    void FuncitionDataType();
+    void DataType();
     void Struct();
     void Mainfunc();
+    void Declaration();
+    void Variable_Declaration();
+    void Array();
+    void Identifer();
+    void UseFunction();
+    void identiferFollow();
 
+    void FunctionLast();
+
+    void FunctionWithType();
+
+    void CompoundStatement();
+
+    void Return();
+
+    void DeclareAssignment();
+
+    void Logic();
+
+    void Else();
+
+    void SuffixExpression();
+
+    void Assignment();
 };
 
 

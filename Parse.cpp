@@ -3,6 +3,11 @@
 //
 
 #include "Parse.h"
+using namespace std;
+
+
+
+
 
 
 Parse::Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
@@ -22,48 +27,317 @@ void Parse::START() {
 }
 
 void Parse::S() {
+    Function();
     Struct();
     Function();
     Mainfunc();
 }
-
-void Parse::Function() {
-    cout << "函数递归子程序" << endl;
-    if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["function"]) {
-        curIndex++;
-        FunctionSon();
-    }
-}
-
 
 
 void Parse::Struct() {
     if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["struct"]) {
         curIndex++;
         if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
-
+            //sturct = 1 mark
+            curIndex++;
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["{"]) {
+                curIndex++;
+                Declaration();
+                if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["}"]) {
+                    Struct();
+                } else {
+                    cout << "Missing right bracket" << endl;
+                    exit(0);
+                }
+            }
         } else {
             cout << "the Sturct Define need an identifer" << endl;
+            exit(0);
         }
     }
 }
 
 
+
+
+
+void Parse::Declaration() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && (tokenVec[curIndex].id == keyWordTable.index["int"] || tokenVec[curIndex].id == keyWordTable.index["double"] || tokenVec[curIndex].id == keyWordTable.index["char"] || tokenVec[curIndex].id == keyWordTable.index["float"] || tokenVec[curIndex].id == keyWordTable.index["bool"])) {
+        Variable_Declaration();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
+            Declaration();
+        } else {
+            cout << "missing end sign in the out" << endl;
+            exit(0);
+        }
+    }
+}
+
+void Parse::Variable_Declaration() {
+    DataType();
+    Identifer();
+    Array();
+}
+
+void Parse::DataType() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && (tokenVec[curIndex].id == keyWordTable.index["int"] || tokenVec[curIndex].id == keyWordTable.index["double"] || tokenVec[curIndex].id == keyWordTable.index["char"] || tokenVec[curIndex].id == keyWordTable.index["float"] || tokenVec[curIndex].id == keyWordTable.index["bool"])) {
+        curIndex++;
+    } else {
+        cout << "None Legel DataType" << endl;
+        exit(0);
+    }
+}
+
+void Parse::Identifer() {
+    if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+        curIndex++;
+        Array();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[","]) {
+            curIndex++;
+            identiferFollow();
+        }
+    }
+}
+
+void Parse::Array() {
+    if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["["]) {
+        curIndex++;
+        if(tokenVec[curIndex].type == TokenType::INTCONST && intTable.contains(tokenVec[curIndex].id) ){
+            curIndex++;
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["]"]) {
+                curIndex++;
+                Array();
+            } else {
+                cout << "missing array end ]" << endl;
+                exit(0);
+            }
+        } else {
+            cout << "Need a int num to stand for the size of array" << endl;
+            exit(0);
+        }
+    }
+}
+
+void Parse::identiferFollow() {
+    if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+        curIndex++;
+        Array();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[","]) {
+            curIndex++;
+            identiferFollow();
+        }
+    }
+}
+
+void Parse::Function() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["function"]) {
+        curIndex++;
+        FunctionSon();
+    }
+}
+
 void Parse::FunctionSon() {
-    if(tokenVec[curIndex].type == TokenType::KEYWORD && (tokenVec[curIndex].id == keyWordTable.index["int"] || tokenVec[curIndex].id == keyWordTable.index["double"] || tokenVec[curIndex].id == keyWordTable.index["char"] || tokenVec[curIndex].id == keyWordTable.index["float"] || tokenVec[curIndex].id == keyWordTable.index["bool"]))  {
-        FuncitionDataType();
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && (tokenVec[curIndex].id == keyWordTable.index["int"] || tokenVec[curIndex].id == keyWordTable.index["double"] || tokenVec[curIndex].id == keyWordTable.index["char"] || tokenVec[curIndex].id == keyWordTable.index["float"] || tokenVec[curIndex].id == keyWordTable.index["bool"])) {
+        curIndex++;
+        DataType();
+        FunctionLast();
+    }  else if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["void"]){
+        curIndex++;
+        FunctionLast();
+    } else {
+        cout << "error define function" << endl;
+        exit(0);
     }
 }
 
-void Parse::FuncitionDataType() {
-    cout << "entry FunctionDatatype" << endl;
-    if()  {
-        FuncitionDataType();
+void Parse::FunctionLast() {
+    if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+        curIndex++;
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+            curIndex++;
+            Declaration();
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+                curIndex++;
+                FunctionWithType();
+            }
+        }
+    }
+}
+
+void Parse::FunctionWithType() {
+    CompoundStatement();
+    Return();
+}
+
+void Parse::CompoundStatement() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && (tokenVec[curIndex].id == keyWordTable.index["int"] || tokenVec[curIndex].id == keyWordTable.index["double"] || tokenVec[curIndex].id == keyWordTable.index["char"] || tokenVec[curIndex].id == keyWordTable.index["float"] || tokenVec[curIndex].id == keyWordTable.index["bool"] || tokenVec[curIndex].id == keyWordTable.index["use"]) ) {
+        DeclareAssignment();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
+            CompoundStatement();
+        } else {
+            cout << "error when missing ;" << endl;
+            exit(0);
+        }
+    } else if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+        DeclareAssignment();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
+            CompoundStatement();
+        }
+    } else if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["if"]) {
+        curIndex++;
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+            Logic();
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+                curIndex++;
+                // 语义动作 if
+                if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["{"]) {
+                    curIndex++;
+                    CompoundStatement();
+                    if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["}"]) {
+                        curIndex++;
+                        Else();
+                        // if end 语义动作
+                        CompoundStatement();
+                    } else {
+                        cout <<"error when missing }" << endl;
+                        exit(0);
+                    }
+                } else {
+                    cout << "error when missing {" << endl;
+                    exit(0);
+                }
+            } else {
+                cout << "error when missing }" << endl;
+                exit(0);
+            }
+        }
+    } else if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["while"]) {
+        curIndex++;
+        // while 语义动作
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+            Logic();
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+                curIndex++;
+                // 语义动作 do
+                if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["{"]) {
+                    curIndex++;
+                    CompoundStatement();
+                    if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["}"]) {
+                        curIndex++;
+                        // 循环语句尾部语义动作
+                        CompoundStatement();
+                    } else {
+                        cout <<"error when missing }" << endl;
+                        exit(0);
+                    }
+                } else {
+                    cout << "error when missing {" << endl;
+                    exit(0);
+                }
+            } else {
+                cout << "error when missing }" << endl;
+                exit(0);
+            }
+        }
+    } else if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["for"]) {
+        curIndex++;
+        // for 语义动作
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+            curIndex++;
+            DeclareAssignment();
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
+                curIndex++;
+                Logic();
+                if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
+                    curIndex++:
+                    // do语义动作
+                    SuffixExpression();
+                    if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+                        curIndex++;
+                        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["{"]) {
+                            curIndex++;
+                            CompoundStatement();
+                            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["}"]) {
+                                //尾部语义动作
+                                curIndex++;
+                                CompoundStatement();
+                            } else {
+                                cout << "error when missing }" << endl;
+                                exit(0);
+                            }
+                        } else {
+                            cout << "error when missing }" << endl;
+                            exit(0);
+                        }
+                    } else {
+                        cout << "error when missing )" << endl;
+                        exit(0);
+                    }
+                } else {
+                    cout << "error when missing ;" << endl;
+                    exit(0);
+                }
+            } else {
+                cout << "error when missing ;" << endl;
+                exit(0);
+            }
+        } else {
+            cout << "error when missing for" << endl;
+            exit(0);
+        }
     }
 }
 
 
+void Parse::Return() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["return"]) {
+        curIndex++;
+        if(tokenVec[curIndex].type == TokenType::IDENTIFIER || tokenVec[curIndex].type == TokenType::INTCONST || tokenVec[curIndex].type == TokenType::FLOATCONST || tokenVec[curIndex].type == TokenType::STRCONST || tokenVec[curIndex].type == TokenType::CHARCONST ) {
+            curIndex++;
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
+                curIndex++;
+            } else {
+                cout << "error when missing ;" << endl;
+                exit(0);
+            }
+        } else {
+            cout << "return type is error" << endl;
+            exit(0);
+        }
+    }
+}
 
+void Parse::DeclareAssignment() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && (tokenVec[curIndex].id == keyWordTable.index["int"] || tokenVec[curIndex].id == keyWordTable.index["double"] || tokenVec[curIndex].id == keyWordTable.index["char"] || tokenVec[curIndex].id == keyWordTable.index["float"] || tokenVec[curIndex].id == keyWordTable.index["bool"])) {
+        Variable_Declaration();
+    } else if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["use"]) {
+        UseFunction();
+    } else if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+        Assignment();
+    } else {
+        cout << "error when delcare" << endl;
+        exit(0);
+    }
+}
 
+void Parse::Logic() {
+
+}
+
+void Parse::Else() {
+
+}
+
+void Parse::SuffixExpression() {
+
+}
+
+void Parse::UseFunction() {
+
+}
+
+void Parse::Assignment() {
+
+}
 
 
