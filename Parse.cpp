@@ -249,7 +249,7 @@ void Parse::CompoundStatement() {
                 curIndex++;
                 Logic();
                 if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[";"]) {
-                    curIndex++:
+                    curIndex++;
                     // do语义动作
                     SuffixExpression();
                     if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
@@ -320,24 +320,152 @@ void Parse::DeclareAssignment() {
     }
 }
 
-void Parse::Logic() {
 
+//debug的时候可以调节
+void Parse::Logic() {
+    if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+        curIndex++;
+        ArithmeticExpression();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+            curIndex++;
+            if(isLogicSign(tokenVec[curIndex])) {
+                curIndex++;
+                if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+                    ArithmeticExpression();
+                    if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+                        // GEQ();
+                    } else {
+                        cout << "error when missing )" << endl;
+                        exit(0);
+                    }
+                } else {
+                    cout << "error when missing (" << endl;
+                    exit(0);
+                }
+            }  else {
+                cout << "error when is not logic sign" << endl;
+                exit(0);
+            }
+        } else {
+            cout  << "error when missing )" << endl;
+            exit(0);
+        }
+    } else if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["!"]) {
+        curIndex++;
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["("]) {
+            curIndex++;
+            ArithmeticExpression();
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index[")"]) {
+                //语义动作 ！
+                curIndex++;
+            } else {
+                cout << "error when missing )" << endl;
+                exit(0);
+            }
+        } else {
+            cout << "error when missing(" << endl;
+            exit(0);
+        }
+    } else {
+        cout << "logic is error" << endl;
+        exit(0);
+    }
 }
 
 void Parse::Else() {
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["else"]) {
+        curIndex++;
+        // else 的语义动作
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["{"]) {
+            curIndex++;
+            CompoundStatement();
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == delimiterTable.index["}"]) {
+                curIndex++;
+            } else {
+                cout << "error when missing } in else" << endl;
 
+                exit(0);
+            }
+        } else {
+            cout << "error when missing { in else" << endl;
+            exit(0);
+        }
+    }
 }
 
 void Parse::SuffixExpression() {
-
+    if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+        curIndex++;
+        Array();
+        if(tokenVec[curIndex].type == TokenType::DELIMTER && okenVec[curIndex].id == delimiterTable.index["++"]) {
+            curIndex++;
+            // 语义动作
+        } else if(tokenVec[curIndex].type == TokenType::DELIMTER && okenVec[curIndex].id == delimiterTable.index["--"]) {
+            //语义动作
+            curIndex++;
+        } else {
+            cout << "error in for conditon" << endl;
+        }
+    } else {
+        "condition need an identifer" << endl;
+    }
 }
 
 void Parse::UseFunction() {
-
+    if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index["use"]) {
+        curIndex++;
+        if(tokenVec[curIndex].type == TokenType::IDENTIFIER) {
+            curIndex++;
+            if(tokenVec[curIndex].type == TokenType::DELIMTER && tokenVec[curIndex].id == keyWordTable.index["("]) {
+                curIndex++;
+                if(tokenVec[curIndex].type == TokenType::KEYWORD && tokenVec[curIndex].id == keyWordTable.index[")"]) {
+                    curIndex++;
+                } else {
+                    cout << "error in missing ) when use function" << endl;
+                    exit(0);
+                }
+            } else {
+                cout << "error in missing ( when use function" << endl;
+                exit(0);
+            }
+        } else {
+            cout << "error in missing identifer when use function" << endl;
+            exit(0);
+        }
+    } else {
+        cout << "error in missing use" << endl;
+    }
 }
 
 void Parse::Assignment() {
+    if(tokenVec[curIndex].type == TokenType::IDENTIFIER ) {
+        curIndex++;
+        Array();
+        Assignment_follow();
+    } else {
+        cout << "error in missing identifer when assignment" << endl;
+        exit(0);
+    }
+}
+
+void Parse::ArithmeticExpression() {
 
 }
+
+bool Parse::isLogicSign(Token token) {
+    if(token.type == TokenType::DELIMTER) {
+        return token.id == delimiterTable.index["&&"] || token.id == delimiterTable.index["||"] || delimiterTable.index[">"] ||  delimiterTable.index["<"] ||  delimiterTable.index["="] ||  delimiterTable.index[">="] ||  delimiterTable.index["<="] ||  delimiterTable.index["=="] ||  delimiterTable.index["!="];
+    }
+    return false;
+}
+
+void Parse::Mainfunc() {
+
+}
+
+void Parse::Assignment_follow() {
+
+}
+
 
 

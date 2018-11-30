@@ -31,12 +31,9 @@ private:
     stack<Token> sem;
     int curIndex;
 public:
-    Parse();
-
     Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
               IdentiferTable &it, DelimiterTable &dt, IntTable &inTable, FloatTable &ft, CharTable &ct,
               StringTable &stTable);
-
     void START();
     void S();
     void Function();
@@ -68,6 +65,12 @@ public:
     void SuffixExpression();
 
     void Assignment();
+
+    void ArithmeticExpression();
+
+    bool isLogicSign(Token token);
+
+    void Assignment_follow();
 };
 
 
