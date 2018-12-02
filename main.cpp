@@ -20,7 +20,7 @@ int main(void) {
     vector<Token> tokenVec;
     Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
     sc.scan("src.txt");
-    //sc.showLex();
+    sc.showLex();
     //cout << tokenVec.size() << endl;
     symbolTable.print();
     return 0;

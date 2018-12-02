@@ -1,39 +1,32 @@
-struct node{
-    int a[2],g[1],c,d;
-    int b;
-};
-function int func1(int x;int y;)
-{
-    int ppd;
-    ppd=x+y;
-	return pdd;
+int c;
+int gcd(int u,int v){
+    if (v==0) return u;
+    else return gcd(v,u-(u/v)*v);
 }
-int main(){
-    double e[7];
-	int i,j,k;
-	i=0;j=1;k=2;
-	e[2]=5*(2+3);
-	e[3]=4;
-	node t[10][9][8],b,c;
-	use func1(i,j);
-	if((e[3]+1)<(e[2])){
-		for(i=0;(i)<(10);i++){
-			int a[10][10][10];
-			a[1][2][3]+=k;
-		}
-	}else{
-		e[4]=7;
-	}
-	while((e[3])&&(e[2])){
-		if((i)>(j)){
-			e[3]-=1;
-			e[2]+=1;
-		}
-	}
-	for(e[1]=0;(e[3])>(0);e[1]++){
-		k+=10;	
-		use func1(e[1],k);
-	}
-	return 0;
+int add(int x,int y){
+    int z;
+    z=x+y;
+    return z;
+}
+int main (){
+   int a;
+   int b;
+   int x;
+   int y;
+   int s[10];
+   a=1;
+   b=2;
+   x=5;
+   y=10;
+   /*a-12345*/
+   gcd(a,b);
+   add(x,y);
+   if (a>b) a=b+1;
+   else b=a+1;
+   while (x<10){
+      x=x+1;
+      s[2]=s[3]+1;
+   }
+   return 0;
 }
 #

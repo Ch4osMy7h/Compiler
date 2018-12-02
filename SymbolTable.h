@@ -77,6 +77,7 @@ public:
     void fillStructVal(string name);
     void entry(string n, int type, Catgory c, int addr);
     void print();
+    int searchSymbolName(string name);
     friend bool operator<(const SymbolEntry &ls, const SymbolEntry &rs);
 };
 

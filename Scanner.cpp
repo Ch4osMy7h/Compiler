@@ -6,6 +6,7 @@
 
 
 void Scanner::scan(string filename) {
+    bool comment = false;
     int state = 1;
     int stateBefore;
     char curChar;
@@ -13,11 +14,24 @@ void Scanner::scan(string filename) {
     string buffer = "";
     FILE* fp;
     Automatic at;
+    int comment_cnt = 0;
     //暂时取消
     if( (fp = fopen("../src.txt", "r")) == NULL) {
         cout << "open Error" << endl;
     }
     while ((curChar = static_cast<char>(getc(fp))) != '#') {
+        if(comment && curChar != '*') {
+            continue;
+        } else if(curChar == '*' && comment){
+            curChar = static_cast<char>(getc(fp));
+            if(curChar == '/') {
+                comment = false;
+                continue;
+            } else {
+                cout << "comment is error" << endl;
+                exit(0);
+            }
+        }
         if(curChar == '\n' || curChar == '\t' || curChar == ' ' || curChar == '\r') {
             tokenGenerate(state, buffer);
             pos = 0;
@@ -31,6 +45,11 @@ void Scanner::scan(string filename) {
         else if(state) {
             buffer += curChar;
         } else {
+            if(stateBefore == 43) {
+                comment = true;
+                reset(fp, state, pos, buffer);
+                continue;
+            }
             tokenGenerate(stateBefore, buffer);
             reset(fp, state, pos, buffer);
         }
@@ -52,7 +71,7 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
             token.name = buffer;
             token.type = IDENTIFIER;
             tokenVec.push_back(token);
-            symbolTable.entry(buffer, -1, Catgory::None, -1);
+            //symbolTable.entry(buffer, -1, Catgory::None, -1);
         }
     } else if(code == "int") {
         int num = string2num<int >(buffer);
@@ -142,4 +161,8 @@ string Scanner::numToName(int num) {
 
 Scanner::Scanner(KeyWordTable &kt, IdentiferTable &it, DelimiterTable &dt, IntTable &inta, FloatTable &ft, CharTable &ct,
                  StringTable &st, vector<Token>& tv, SymbolTable& syt) : keyWordTable(kt), identiferTable(it), delimiterTable(dt), intTable(inta), floatTable(ft), charTable(ct), stringTable(st), tokenVec(tv), symbolTable(syt){}
+
+void Scanner::preProcess() {
+
+}
 

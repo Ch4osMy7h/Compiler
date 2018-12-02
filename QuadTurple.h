@@ -10,15 +10,17 @@
 
 using namespace std;
 
-enum Operation {
 
-};
 
 class QuadTurple {
+public:
+    QuadTurple(const string& op, const string &name1, const string &name2, const string &res);
+
 private:
-    Operation op;
+    string op;
     string name1;
     string name2;
+    string res;
 
 };
 

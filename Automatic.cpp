@@ -124,14 +124,17 @@ void Automatic::init() {
     // state 39
     fillAll(39, 0);
     fillState(39, '=', 40);
+    fillState(39, '/', 43);
     // state 40
     fillAll(40, 0);
     // state 41
     fillAll(41, 0);
     fillState(41, '=', 42);
+    fillState(41, '*', 43);
     // state 42
     fillAll(42, 0);
-
+    // state 43
+    fillAll(43, 0);
 }
 
 void Automatic::fillChars(int from, int to) {

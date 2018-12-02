@@ -16,10 +16,12 @@ DelimiterTable::DelimiterTable() {
 }
 
 KeyWordTable::KeyWordTable() {
-    vector<string> keyWord = {"int", "main", "void", "if",
-                              "else", "char", "double", "float",
-                              "while", "for", "do", "break", "struct",
-                              "long", "bool", "return", "function", "use"};
+    vector<string> keyWord = { "auto" , "short" , "int" , "long" , "real" ,
+                               "double" , "char" , "struct" , "union" , "enum" , "typedef" ,
+                               "const" , "unsigned" , "signed" , "extern" , "register" , "static" ,
+                               "volatile" , "void" , "if" , "else" , "switch" , "case" , "for" ,
+                               "do" , "while" , "goto" , "continue" , "break" , "default" ,
+                               "sizeof" , "return" , "bool" , "cout", "use", "func"};
     for(auto c : keyWord) {
         tokenTable.push_back(c);
         index[c] = static_cast<int>(tokenTable.size());

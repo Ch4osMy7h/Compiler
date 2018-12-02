@@ -29,4 +29,13 @@ bool operator<(const SymbolEntry &ls, const SymbolEntry &rs) {
     return ls.name < rs.name;
 }
 
+int SymbolTable::searchSymbolName(string name) {
+    for(int i = 0; i < tokenTable.size(); i++) {
+        if(tokenTable[i].name == name) {
+            return i+1;
+        }
+    }
+    return 0;
+}
+
 

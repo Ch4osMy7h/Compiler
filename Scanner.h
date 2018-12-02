@@ -27,6 +27,7 @@ private:
 
 public:
     Scanner(KeyWordTable & kt, IdentiferTable& it, DelimiterTable& dt, IntTable & inta, FloatTable& ft, CharTable& ct, StringTable& st, vector<Token>& tokenVec, SymbolTable& syt);
+    void preProcess();
     void scan(string filename);
     void tokenGenerate(int state_before, string buffer);
     string encoder(int state);

@@ -16,8 +16,7 @@ enum TokenType
     KEYWORD = 5,
     CHARCONST = 6,
     STRCONST = 7,
-    END = 0,
-    ERROR = -1
+    OPERATOR = 8
 };
 
 
