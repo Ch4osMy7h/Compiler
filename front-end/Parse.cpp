@@ -558,7 +558,11 @@ int Parse::solve() {
 }
 
 int Parse::localDeclarations() {
-    return 0;
+    if(varDeclaration()) {
+        localDeclarations();
+        return 1;
+    }
+    return 1;
 }
 
 bool Parse::isNum(Token &token) {
