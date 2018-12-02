@@ -300,7 +300,7 @@ int Parse::factor() {
 }
 
 int Parse::call() {
-    return 0;
+    return 1;
 }
 
 int Parse::args() {
