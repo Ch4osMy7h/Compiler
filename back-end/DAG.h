@@ -13,7 +13,9 @@ struct BasicBlock
 {
     vector<QuadTurple> block;
     BasicBlock(vector<QuadTurple> v, int begin, int end): block(v.begin() + begin , v.end() + end) {};
-    BasicBlock() {};
+    BasicBlock() = default;;
 };
+
+
 
 #endif //COMPILER_DAG_H
