@@ -67,6 +67,7 @@ public:
     int argList();                     //调用参数列表
     int solve();                       //语法分析
     bool isType(Token token);           //是否是类型关键字
+    bool isNum(Token &token);
 };
 
 

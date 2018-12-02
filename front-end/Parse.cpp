@@ -224,10 +224,11 @@ int Parse::compoundStmt(bool isOutput) {
         index = curIndex;
         if(!statementList()) curIndex = index;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["}"] == tokenVec[curIndex].id) {
+            curIndex++;
+        } else {
             cout << "Error occured when missing \"}\" char" << endl;
             exit(0);
         }
-        curIndex++;
         return 1;
     }
     return 0;
@@ -244,70 +245,311 @@ int Parse::statementList() {
 }
 
 int Parse::statement() {
+    int index = curIndex;
+    if(expressionStmt()) {
+        return 1;
+    }
+    curIndex = index;
+    if(compoundStmt(true)) {
+        return 1;
+    }
+    curIndex = index;
+    if(selectionStmt()) {
+        return 1;
+    }
+    curIndex = index;
+    if(iterationStmt()) {
+        return 1;
+    }
+    curIndex = index;
+    if(returnStmt()) {
+        return 1;
+    }
     return 0;
 }
 
 int Parse::expressionStmt() {
+    expression();
+    if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id) {
+       curIndex++;
+       return 1;
+    } else {
+        cout << "expression need an , flag" << endl;
+        exit(0);
+    }
+    //
     return 0;
 }
 
 int Parse::selectionStmt() {
+    int index = curIndex;
+    if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["if"] == tokenVec[curIndex].id) {
+        curIndex++;
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
+            curIndex++;
+            quadVec.emplace_back(QuadTurple("if", "##", "##", "##"));
+        } else {
+            cout << "if语句缺少左括号" << endl;
+            exit(0);
+        }
+        if(!expression()) {
+            cout << "if语句表达式错误 " << endl;
+            exit(0);
+        }
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
+            curIndex++;
+        } else {
+            cout << "if语句缺少右括号" << endl;
+            exit(0);
+        }
+        quadVec.emplace_back(QuadTurple("ifbegin", "##", "##", "##"));
+        if(!statement()) {
+            cout << "statement语句表达式错误" << endl;
+            exit(0);
+        }
+        if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["else"] == tokenVec[curIndex].id) {
+            quadVec.emplace_back(QuadTurple("else", "##", "##", "##"));
+            curIndex++;
+            if(!statement()) {
+                cout << "else 语句表达式错误" << endl;
+                exit(0);
+            }
+        }
+        quadVec.emplace_back(QuadTurple("ifend", "##", "##", "##"));
+        return 1;
+    }
     return 0;
 }
 
 int Parse::iterationStmt() {
+    if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["while"] == tokenVec[curIndex].id) {
+        curIndex++;
+        quadVec.emplace_back("while", "##", "##", "##");
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
+            curIndex++;
+        } else {
+            cout << "while缺少左括号"<< endl;
+            exit(0);
+        }
+        if(!expression()) {
+            cout << "while条件语句表达式错误" << endl;
+            exit(0);
+        }
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
+           curIndex++;
+            quadVec.emplace_back("whilebegin", "##", "##", "##");
+        } else {
+            cout <<"while缺少右括号" << endl;
+            exit(0);
+        }
+        if(!statement()) {
+            cout << "while函数定义出现错误" << endl;
+            exit(0);
+        }
+        quadVec.emplace_back("whileend", "##", "##", "##");
+        return 1;
+    }
     return 0;
 }
 
 int Parse::returnStmt() {
+    if(tokenVec[curIndex].type == KEYWORD && keyWordTable.index["return"] = tokenVec[curIndex].id) {
+        curIndex++;
+        if(!expression()) {
+            quadVec.emplace_back("return", "##", "##", "##");
+        } else {
+            //quadVec.emplace_back("return", to_string(), "##", "##");
+        }
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
+            curIndex++;
+        } else {
+            cout<<"return 语句缺少';'!" << endl;
+            exit(0);
+        }
+        return 1;
+    }
     return 0;
 }
 
 int Parse::expression() {
+    int index = curIndex;
+    if(var()) {
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["="] == tokenVec[curIndex].id) {
+            curIndex++;
+            if (expression()) {
+
+            } else {
+                cout << "表达式错误" << endl;
+                exit(0);
+            }
+            //符号表
+            return 1;
+        }
+    }
+    curIndex = index;
+    if(simpleExpression()) {
+        return 1;
+    }
+    curIndex = index;
     return 0;
 }
 
 int Parse::var() {
+    if(tokenVec[curIndex].type == IDENTIFIER) {
+        curIndex++;
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["["]) {
+            curIndex++;
+            if(!expression()) {
+                cout << "数组内表达式错误" << endl;
+                exit(0);
+            }
+            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"]) {
+                curIndex++;
+            } else {
+                cout << "数组缺少]" << endl;
+                exit(0);
+            }
+            return 1;
+        }
+        return 1;
+    }
     return 0;
 }
 
 int Parse::simpleExpression() {
+    int index = curIndex;
+    if(additiveExpression()) {
+        if(relop()) {
+            if(additiveExpression()) {
+
+            } else {
+                cout << "表达式错误" << endl;
+                exit(0);
+            }
+        }
+        return 1;
+    }
+    curIndex = index;
     return 0;
 }
 
 int Parse::relop() {
+    if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["<="] == tokenVec[curIndex].id || delimiterTable.index["<"] == tokenVec[curIndex].id || delimiterTable.index[">"] == tokenVec[curIndex].id || delimiterTable.index[">="] == tokenVec[curIndex].id || delimiterTable.index["=="] == tokenVec[curIndex].id || delimiterTable.index["!="] == tokenVec[curIndex].id )) {
+        curIndex++;
+        return 1;
+    }
     return 0;
 }
 
 int Parse::additiveExpression() {
+    if(term())  {
+        if(addop()) {
+            if(!term()) {
+                cout << "addop后面缺少表达式" << endl;
+                exit(0);
+            }
+            return 1;
+        }
+        return 1;
+    }
     return 0;
 }
 
 int Parse::addop() {
+    if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["+"] == tokenVec[curIndex].id ||delimiterTable.index["-"] == tokenVec[curIndex].id )) {
+        curIndex++;
+        return 1;
+    }
     return 0;
 }
 
 int Parse::term() {
+    if(factor()) {
+        if(mulop()) {
+            if(term()) {
+                return 1;
+            } else {
+                cout << "缺少表达式" << endl;
+                exit(0);
+            }
+        }
+    }
     return 0;
 }
 
 int Parse::mulop() {
+    if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["*"] == tokenVec[curIndex].id ||delimiterTable.index["/"] == tokenVec[curIndex].id )) {
+        curIndex++;
+    }
     return 0;
 }
 
 int Parse::factor() {
+    int index = curIndex;
+    if(call()) {
+        return 1;
+    }
+    if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
+        curIndex++;
+        if(expression()) {
+            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[" )"]) {
+                curIndex++;
+            } else {
+                cout << "缺少)" << endl;
+            }
+        } else {
+            cout << "表达数错误" << endl;
+            exit(0);
+        }
+    }
+    if(isNum(tokenVec[curIndex])) {
+        return 1;
+    }
+    if(var()) {
+        return 1;
+    }
+    curIndex = index;
     return 0;
 }
 
 int Parse::call() {
-    return 1;
-}
-
-int Parse::args() {
+    if(tokenVec[curIndex].type == IDENTIFIER) {
+        curIndex++;
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
+            curIndex++;
+            if(args()) {
+                if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
+                    curIndex++;
+                } else {
+                    cout << "函数调用缺少左括号" << endl;
+                }
+            } else {
+                cout << "函数调用参数错误" << endl;
+            }
+        }
+        return 1;
+    }
     return 0;
 }
 
+int Parse::args() {
+    if(argList()) {
+        return 1;
+    }
+    return 1;
+}
+
 int Parse::argList() {
+    if(expression())  {
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id)  {
+            curIndex++;
+            if(!argList())  {
+                cout << ",后没有参数定义" << endl;
+                exit(0);
+            }
+        }
+        return 1;
+    }
     return 0;
 }
 
@@ -317,6 +559,10 @@ int Parse::solve() {
 
 int Parse::localDeclarations() {
     return 0;
+}
+
+bool Parse::isNum(Token &token) {
+    return token.type == FLOATCONST ||  token.type == INTCONST;
 }
 
 
