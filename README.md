@@ -2,7 +2,7 @@
 ## To Do List
 ### Front-End
 - [X] Lexical analysis
-- [ ] Parsing
+- [X] Parsing
 - [ ] Semantic Analysis
 
 ### Back-End
