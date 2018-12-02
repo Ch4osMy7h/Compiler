@@ -46,25 +46,25 @@ public:
     int paramList();                   //参数列表
     int param();                        //单个参数
     int compoundStmt(bool isOutput);  //复合语句
-    int local_declarations();           //本地变量声明
-    int statement_list();               //语句列表
+    int localDeclarations();           //本地变量声明
+    int statementList();               //语句列表
     int statement();                    //语句
-    int expression_stmt();              //表达式语句
-    int selection_stmt();               //选择语句
-    int iteration_stmt();               //循环语句
-    int return_stmt();                  //返回语句
+    int expressionStmt();              //表达式语句
+    int selectionStmt();               //选择语句
+    int iterationStmt();               //循环语句
+    int returnStmt();                  //返回语句
     int expression();                   //表达式
     int var();                          //变量
-    int simple_expression();            //简单表达式
+    int simpleExpression();            //简单表达式
     int relop();                        //简单表达式符号
-    int additive_expression();          //加法表达式
+    int additiveExpression();          //加法表达式
     int addop();                        //加法表达式符号
     int term();                         //乘法表达式项
     int mulop();                        //乘法表达式符号
     int factor();                       //乘法表达式的因子
     int call();                         //函数调用
     int args();                         //调用参数
-    int arg_list();                     //调用参数列表
+    int argList();                     //调用参数列表
     int solve();                       //语法分析
     bool isType(Token token);           //是否是类型关键字
 };

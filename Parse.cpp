@@ -158,7 +158,7 @@ int Parse::funDeclaration() {
             //语义动作 函数四元式
             return 1;
         } else {
-            cout << "函数定义失败" << endl;
+            cout << "函数定义错误" << endl;
         }
     }
     return 0;
@@ -216,11 +216,110 @@ int Parse::param() {
 }
 
 int Parse::compoundStmt(bool isOutput) {
+    int index = curIndex;
     if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["{"] == tokenVec[curIndex].id) {
         curIndex++;
+        index = curIndex;
+        if(!localDeclarations()) curIndex = index;
+        index = curIndex;
+        if(!statementList()) curIndex = index;
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["}"] == tokenVec[curIndex].id) {
+            cout << "Error occured when missing \"}\" char" << endl;
+            exit(0);
+        }
+        curIndex++;
+        return 1;
     }
     return 0;
 }
+
+int Parse::statementList() {
+    int index = curIndex;
+    if (statement()) {
+        statementList();
+        return 1;
+    }
+    curIndex = index;
+    return 1;
+}
+
+int Parse::statement() {
+    return 0;
+}
+
+int Parse::expressionStmt() {
+    return 0;
+}
+
+int Parse::selectionStmt() {
+    return 0;
+}
+
+int Parse::iterationStmt() {
+    return 0;
+}
+
+int Parse::returnStmt() {
+    return 0;
+}
+
+int Parse::expression() {
+    return 0;
+}
+
+int Parse::var() {
+    return 0;
+}
+
+int Parse::simpleExpression() {
+    return 0;
+}
+
+int Parse::relop() {
+    return 0;
+}
+
+int Parse::additiveExpression() {
+    return 0;
+}
+
+int Parse::addop() {
+    return 0;
+}
+
+int Parse::term() {
+    return 0;
+}
+
+int Parse::mulop() {
+    return 0;
+}
+
+int Parse::factor() {
+    return 0;
+}
+
+int Parse::call() {
+    return 0;
+}
+
+int Parse::args() {
+    return 0;
+}
+
+int Parse::argList() {
+    return 0;
+}
+
+int Parse::solve() {
+    return 0;
+}
+
+int Parse::localDeclarations() {
+    return 0;
+}
+
+
 
 
 
