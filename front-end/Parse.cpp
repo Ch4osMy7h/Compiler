@@ -264,7 +264,7 @@ int Parse::returnStmt() {
 }
 
 int Parse::expression() {
-    return 0;
+    return 1;
 }
 
 int Parse::var() {
