@@ -3,7 +3,7 @@
 //
 
 #include "Scanner.h"
-#include "Parse.h"
+#include "front-end/Parse.h"
 using namespace std;
 
 int main(void) {

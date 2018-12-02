@@ -6,11 +6,11 @@
 #define COMPILER_PARSE_H
 
 #include "bits/stdc++.h"
-#include "QuadTurple.h"
-#include "Token.h"
-#include "SymbolTable.h"
-#include "TypeTable.h"
-#include "util.h"
+#include "../QuadTurple.h"
+#include "../Token.h"
+#include "../SymbolTable.h"
+#include "../TypeTable.h"
+#include "../MyUtils.h"
 
 using namespace std;
 

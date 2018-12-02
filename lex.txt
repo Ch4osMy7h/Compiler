@@ -164,3 +164,7 @@
          0       int        14
          ;  delimter        12
          }  delimter        11
+====================================
+             SymbolTable            
+====================================
+ID	Name	Type	Cat	Addr

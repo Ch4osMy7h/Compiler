@@ -8,8 +8,8 @@
 #include <bits/stdc++.h>
 #include "Token.h"
 #include "TypeTable.h"
-#include "Automatic.h"
-#include "utils.cpp"
+#include "front-end/Automatic.h"
+#include "MyUtils.h"
 #include "SymbolTable.h"
 using namespace std;
 
