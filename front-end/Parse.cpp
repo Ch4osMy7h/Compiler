@@ -5,7 +5,7 @@
 #include "Parse.h"
 using namespace std;
 
-Parse::Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
+Parse::Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
              IdentiferTable &it, DelimiterTable &dt, IntTable &inTable, FloatTable &ft, CharTable &ct,
              StringTable &stTable) : quadVec(quadVec), tokenVec(tokenVec), st(st), keyWordTable(kt), identiferTable(it), delimiterTable(dt), intTable(inTable), floatTable(ft), charTable(ct), stringTable(stTable){
     this->curIndex = 0;
@@ -16,10 +16,10 @@ Parse::Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &
 int Parse::program() {
     int index = curIndex;
     //fun语义动作
-    QuadTurple qt("fun", "-1", "*", "*");
+    QuadTuple qt("fun", "-1", "*", "*");
     quadVec.push_back(qt);
     if(declarationList()) {
-        QuadTurple qt("funend", "-1", "*", "*");
+        QuadTuple qt("funend", "-1", "*", "*");
         quadVec.push_back(qt);
         return 1;
     }
@@ -287,7 +287,7 @@ int Parse::selectionStmt() {
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
             curIndex++;
-            quadVec.emplace_back(QuadTurple("if", "##", "##", "##"));
+            quadVec.emplace_back(QuadTuple("if", "##", "##", "##"));
         } else {
             cout << "if语句缺少左括号" << endl;
             exit(0);
@@ -302,20 +302,20 @@ int Parse::selectionStmt() {
             cout << "if语句缺少右括号" << endl;
             exit(0);
         }
-        quadVec.emplace_back(QuadTurple("ifbegin", "##", "##", "##"));
+        quadVec.emplace_back(QuadTuple("ifbegin", "##", "##", "##"));
         if(!statement()) {
             cout << "statement语句表达式错误" << endl;
             exit(0);
         }
         if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["else"] == tokenVec[curIndex].id) {
-            quadVec.emplace_back(QuadTurple("else", "##", "##", "##"));
+            quadVec.emplace_back(QuadTuple("else", "##", "##", "##"));
             curIndex++;
             if(!statement()) {
                 cout << "else 语句表达式错误" << endl;
                 exit(0);
             }
         }
-        quadVec.emplace_back(QuadTurple("ifend", "##", "##", "##"));
+        quadVec.emplace_back(QuadTuple("ifend", "##", "##", "##"));
         return 1;
     }
     return 0;

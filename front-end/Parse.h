@@ -6,7 +6,7 @@
 #define COMPILER_PARSE_H
 
 #include "bits/stdc++.h"
-#include "../QuadTurple.h"
+#include "../QuadTuple.h"
 #include "../Token.h"
 #include "../SymbolTable.h"
 #include "../TypeTable.h"
@@ -18,7 +18,7 @@ using namespace std;
 
 class Parse {
 private:
-    vector<QuadTurple>& quadVec;
+    vector<QuadTuple>& quadVec;
     vector<Token>& tokenVec;
     SymbolTable& st;
     KeyWordTable& keyWordTable;
@@ -33,7 +33,7 @@ private:
     int curFun;
     int funCnt;
 public:
-    Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
+    Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
               IdentiferTable &it, DelimiterTable &dt, IntTable &inTable, FloatTable &ft, CharTable &ct,
               StringTable &stTable);
     int program();                      //程序主入口
