@@ -42,13 +42,14 @@ int Parse::declarationList() {
         funCnt = funC;
         return 0;
     }
-    declaration();
+    declarationList();
     return 1;
 }
 
 int Parse::declaration() {
-    //是否有必要回溯
+    int index = curIndex;
     if(funDeclaration()) return 1;
+    curIndex = index;
     if(varDeclaration()) return 1;
     return 0;
 }
@@ -94,10 +95,6 @@ int Parse::varDeclaration() {
                 cout << "miss an ] flag when defina an array" << endl;
                 exit(0);
             }
-        } else if(tokenVec[curIndex].type == IDENTIFIER) {
-            curIndex++;
-        } else {
-            cout << "error when define variable" << endl;
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
             curIndex++;
@@ -118,11 +115,11 @@ int Parse::varDeclaration() {
 }
 
 int Parse::typeSpecifier() {
+    int index = curIndex;
     if(tokenVec[curIndex].type == KEYWORD && isType(tokenVec[curIndex])) {
         curIndex++;
         return 1;
     } else {
-        cout << "Uncorreted type specifier" << endl;
         return 0;
     }
 }
@@ -135,8 +132,8 @@ int Parse::funDeclaration() {
     if(typeSpecifier()) {
         string curName;
         if(tokenVec[curIndex].type == IDENTIFIER) {
-            curIndex++;
             curName = tokenVec[curIndex].name;
+            curIndex++;
         } else {
             cout << "Error occured when missing variable name or function name" << endl;
             exit(0);
@@ -144,8 +141,7 @@ int Parse::funDeclaration() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
-            cout << "Error occured when missing \"(\" char" << endl;
-            exit(0);
+           return 0;
         }
         params();
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
@@ -219,13 +215,12 @@ int Parse::compoundStmt(bool isOutput) {
     int index = curIndex;
     if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["{"] == tokenVec[curIndex].id) {
         curIndex++;
-        index = curIndex;
-        if(!localDeclarations()) curIndex = index;
-        index = curIndex;
-        if(!statementList()) curIndex = index;
+        localDeclarations();
+        statementList();
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["}"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
+            cout << curIndex << endl;
             cout << "Error occured when missing \"}\" char" << endl;
             exit(0);
         }
@@ -269,15 +264,21 @@ int Parse::statement() {
 }
 
 int Parse::expressionStmt() {
-    expression();
-    if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id) {
+    bool isExpression = false;
+    if(expression()) {
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
+            curIndex++;
+            return 1;
+        } else {
+            cout << "Errored when missing ; char" << endl;
+            exit(0);
+        }
+    }
+
+    if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
        curIndex++;
        return 1;
-    } else {
-        cout << "expression need an , flag" << endl;
-        exit(0);
     }
-    //
     return 0;
 }
 
@@ -293,12 +294,15 @@ int Parse::selectionStmt() {
             exit(0);
         }
         if(!expression()) {
+            cout << tokenVec[curIndex].name << endl;
             cout << "if语句表达式错误 " << endl;
             exit(0);
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
+            cout << curIndex << endl;
+            cout << tokenVec[curIndex].name  << endl;
             cout << "if语句缺少右括号" << endl;
             exit(0);
         }
@@ -353,7 +357,7 @@ int Parse::iterationStmt() {
 }
 
 int Parse::returnStmt() {
-    if(tokenVec[curIndex].type == KEYWORD && keyWordTable.index["return"] = tokenVec[curIndex].id) {
+    if(tokenVec[curIndex].type == KEYWORD && keyWordTable.index["return"] == tokenVec[curIndex].id) {
         curIndex++;
         if(!expression()) {
             quadVec.emplace_back("return", "##", "##", "##");
@@ -397,13 +401,15 @@ int Parse::expression() {
 int Parse::var() {
     if(tokenVec[curIndex].type == IDENTIFIER) {
         curIndex++;
-        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["["]) {
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["["] == tokenVec[curIndex].id) {
             curIndex++;
             if(!expression()) {
                 cout << "数组内表达式错误" << endl;
+//                cout << curIndex << endl;
+//                cout << tokenVec[curIndex-1].name << endl;
                 exit(0);
             }
-            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"]) {
+            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"] == tokenVec[curIndex].id) {
                 curIndex++;
             } else {
                 cout << "数组缺少]" << endl;
@@ -446,6 +452,7 @@ int Parse::additiveExpression() {
         if(addop()) {
             if(!term()) {
                 cout << "addop后面缺少表达式" << endl;
+                cout << tokenVec[curIndex].name << endl;
                 exit(0);
             }
             return 1;
@@ -473,6 +480,7 @@ int Parse::term() {
                 exit(0);
             }
         }
+        return 1;
     }
     return 0;
 }
@@ -480,6 +488,7 @@ int Parse::term() {
 int Parse::mulop() {
     if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["*"] == tokenVec[curIndex].id ||delimiterTable.index["/"] == tokenVec[curIndex].id )) {
         curIndex++;
+        return 1;
     }
     return 0;
 }
@@ -492,10 +501,13 @@ int Parse::factor() {
     if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
         curIndex++;
         if(expression()) {
-            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[" )"]) {
+            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
                 curIndex++;
+                return 1;
             } else {
+                cout << curIndex << " " << tokenVec[curIndex-1].name << endl;
                 cout << "缺少)" << endl;
+                exit(0);
             }
         } else {
             cout << "表达数错误" << endl;
@@ -503,6 +515,7 @@ int Parse::factor() {
         }
     }
     if(isNum(tokenVec[curIndex])) {
+        curIndex++;
         return 1;
     }
     if(var()) {
@@ -513,6 +526,7 @@ int Parse::factor() {
 }
 
 int Parse::call() {
+    int index = curIndex;
     if(tokenVec[curIndex].type == IDENTIFIER) {
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
@@ -521,14 +535,20 @@ int Parse::call() {
                 if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
                     curIndex++;
                 } else {
-                    cout << "函数调用缺少左括号" << endl;
+                    cout << "函数调用缺少右括号" << endl;
+                    exit(0);
                 }
             } else {
                 cout << "函数调用参数错误" << endl;
+                exit(0);
             }
+        } else {
+            curIndex = index;
+            return 0;
         }
         return 1;
     }
+    curIndex = index;
     return 0;
 }
 
@@ -553,9 +573,7 @@ int Parse::argList() {
     return 0;
 }
 
-int Parse::solve() {
-    return 0;
-}
+
 
 int Parse::localDeclarations() {
     if(varDeclaration()) {
@@ -567,6 +585,13 @@ int Parse::localDeclarations() {
 
 bool Parse::isNum(Token &token) {
     return token.type == FLOATCONST ||  token.type == INTCONST;
+}
+
+void Parse::parse() {
+    if(!program())  {
+        cout << "程序运行错误" << endl;
+    }
+    //cout << curIndex << endl;
 }
 
 

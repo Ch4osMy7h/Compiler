@@ -22,8 +22,19 @@ int main(void) {
     vector<QuadTurple> quadVec;
     Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
     sc.scan("src.txt");
-    sc.showLex();
+    //sc.showLex();
     //cout << tokenVec.size() << endl;
-    symbolTable.print();
+    //symbolTable.print();
+    /*
+    Parse::Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
+                 IdentiferTable &it, DelimiterTable &dt, IntTable &inTable, FloatTable &ft, CharTable &ct,
+                 StringTable &stTable) : quadVec(quadVec), tokenVec(tokenVec), st(st), keyWordTable(kt), identiferTable(it), delimiterTable(dt), intTable(inTable), floatTable(ft), charTable(ct), stringTable(stTable){
+        this->curIndex = 0;
+        this->curFun = -1;
+        this->funCnt = 0;
+    }
+    */
+    Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
+    parse.parse();
     return 0;
 }
