@@ -19,7 +19,7 @@ int main(void) {
     StringTable stringTable;
     SymbolTable symbolTable;
     vector<Token> tokenVec;
-    vector<QuadTurple> quadVec;
+    vector<QuadTuple> quadVec;
     Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
     sc.scan("src.txt");
     //sc.showLex();
