@@ -9,76 +9,92 @@
 
 using namespace std;
 
-
-enum Catgory {
-    Array = 0,
-    Struct = 1,
-    Variable = 2,
-    None = 3
-};
-
-
 enum Type {
-    ArrayType = 1,
-    StructType = 2,
-    IntType = 3,
-    CharType = 4,
-    BoolType = 5,
-    FloatType = 6,
-    DoubleType = 7
+    INT = 1,
+    DOUBLE = 2,
+    CHAR = 3,
+    BOOL = 4,
+    ARRAY = 5
 };
 
-struct SymbolEntry {
-    string name;
+
+
+struct ConstTable {
+    double num;
+};
+
+
+
+
+struct ArrayInfo {
+    unsigned int low, up;
     int type;
-    Catgory cat;
-    int addr;
-    //bool isActive;
+    unsigned int clen;
 };
 
-struct TypeTable {
-    Type type;
-    int TPoint; // 0 == null , 1 == array, 2 == struct
-};
-
-struct ArrayTable {
-    int low = 0;
-    int up;
-    int ctp, clen;
-};
-
-struct StructTableVal {
+struct ParamInfo {
     string name;
-    int off;
-    vector<int> tp;
+    Type type;
+    //vector<ArrayInfo> ai;
+    //int vall;
+    bool isFormalParam;
+    ParamInfo(string n, Type t, bool is) {
+        name = n;
+        type = t;
+        isFormalParam = is;
+    }
+};
+
+struct FunctionTable {
+    int fn;
+    vector<ParamInfo> pi;
+    int entry;
 };
 
 
-struct FunctionTable
-{
-    int level;
-    int paraNum;
-    int returnType;
-    vector<int> para;
+struct Vall {
+
 };
 
-typedef vector<StructTableVal> StructTableEntry;
+
+enum Category {
+    FUNCTION = 1,
+    CONST = 2,
+    VARIABLE = 3,
+    NONE = 4
+};
+
+struct SymbolTableElement {
+    string name;
+    Type type;
+    Category cat;
+    int addr;
+    ConstTable* ct{};
+    int len{};
+    int ai;
+    Vall* vall{};
+    SymbolTableElement() {
+        name = "";
+        type = INT;
+        //cat = -1;
+        cat = NONE;
+        addr = -1;
+        ai = -1;
+    }
+};
 
 
 
 
 
-
-class SymbolTable : public Table<SymbolEntry> {
-private:
-    vector<StructTableEntry> StructTable;
-
+class SymbolTable : public Table<SymbolTableElement> {
 public:
+    vector<FunctionTable> functionTableVec;
+    vector<ArrayInfo> arrayTableVec;
     void fillStructVal(string name);
-    void entry(string n, int type, Catgory c, int addr);
     void print();
     int searchSymbolName(string name);
-    friend bool operator<(const SymbolEntry &ls, const SymbolEntry &rs);
+    friend bool operator<(const SymbolTableElement& ls, SymbolTableElement& rs);
 };
 
 

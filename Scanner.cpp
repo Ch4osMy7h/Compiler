@@ -6,20 +6,21 @@
 
 
 void Scanner::scan(string filename) {
-    bool comment = false;
-    int state = 1;
-    int stateBefore;
-    char curChar;
-    int pos = 0;
-    string buffer = "";
+    bool comment = false; //是否有注释
+    int state = 1;   //当前状态
+    int stateBefore; //前一个状态
+    char curChar; //当前字符
+    int pos = 0;  //当前位置
+    string buffer = ""; //识别到的串
     FILE* fp;
-    Automatic at;
+    Automatic at; //初始化自动机
     int comment_cnt = 0;
     //暂时取消
     if( (fp = fopen("../src.txt", "r")) == NULL) {
         cout << "open Error" << endl;
     }
     while ((curChar = static_cast<char>(getc(fp))) != '#') {
+        //跳过注释
         if(comment && curChar != '*') {
             continue;
         } else if(curChar == '*' && comment){
@@ -32,6 +33,7 @@ void Scanner::scan(string filename) {
                 exit(0);
             }
         }
+        //跳过空格 换行符 \t 以及回车
         if(curChar == '\n' || curChar == '\t' || curChar == ' ' || curChar == '\r') {
             tokenGenerate(state, buffer);
             pos = 0;
@@ -41,10 +43,12 @@ void Scanner::scan(string filename) {
         }
         stateBefore = state;
         state = at.getState(state, curChar);
+        //自动机扫描
         if(state == 1 && stateBefore == 1) {}
         else if(state) {
             buffer += curChar;
         } else {
+            //判断是否为注释
             if(stateBefore == 43) {
                 comment = true;
                 reset(fp, state, pos, buffer);
@@ -106,6 +110,9 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
     }
 }
 
+
+
+//判断进入终止状态时候是什么类型的token
 string Scanner::encoder(int state) {
     map<int, string> finalState;
     finalState[2] = "k";
@@ -132,6 +139,7 @@ string Scanner::encoder(int state) {
     return finalState[state];
 }
 
+//重置自动机扫描头
 void Scanner::reset(FILE *fp, int &state, int &pos, string &buffer) {
     pos = 0;
     buffer = "";
@@ -139,6 +147,7 @@ void Scanner::reset(FILE *fp, int &state, int &pos, string &buffer) {
     fseek(fp, -1L, 1);
 }
 
+//显示词法分析结果
 void Scanner::showLex() {
     freopen("../lex.txt", "w", stdout);
     cout << "\t\t词法分析结果\t\t" << endl;
@@ -146,6 +155,9 @@ void Scanner::showLex() {
         cout << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id << endl;
     }
 }
+
+
+//返回该存入的table
 string Scanner::numToName(int num) {
     map<int, string> changeTable;
     changeTable[1] = "identifer";
@@ -162,7 +174,4 @@ string Scanner::numToName(int num) {
 Scanner::Scanner(KeyWordTable &kt, IdentiferTable &it, DelimiterTable &dt, IntTable &inta, FloatTable &ft, CharTable &ct,
                  StringTable &st, vector<Token>& tv, SymbolTable& syt) : keyWordTable(kt), identiferTable(it), delimiterTable(dt), intTable(inta), floatTable(ft), charTable(ct), stringTable(st), tokenVec(tv), symbolTable(syt){}
 
-void Scanner::preProcess() {
-
-}
 

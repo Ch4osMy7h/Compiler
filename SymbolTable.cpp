@@ -5,15 +5,7 @@
 #include "SymbolTable.h"
 
 
-void SymbolTable::entry(string n, int type, Catgory c, int addr) {
-    SymbolEntry se;
-    se.name = n;
-    se.type = type;
-    se.cat = c;
-    se.addr = addr;
-    tokenTable.push_back(se);
-    index[se] = static_cast<int>(tokenTable.size());
-}
+
 
 void SymbolTable::print() {
     cout << "====================================" << endl;
@@ -25,17 +17,19 @@ void SymbolTable::print() {
     }
 }
 
-bool operator<(const SymbolEntry &ls, const SymbolEntry &rs) {
-    return ls.name < rs.name;
-}
+
 
 int SymbolTable::searchSymbolName(string name) {
     for(int i = 0; i < tokenTable.size(); i++) {
         if(tokenTable[i].name == name) {
-            return i+1;
+            return i;
         }
     }
-    return 0;
+    return -1;
+}
+
+bool operator<(const SymbolTableElement &ls, SymbolTableElement &rs) {
+    return ls.name < rs.name;
 }
 
 

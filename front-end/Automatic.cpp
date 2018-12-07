@@ -137,6 +137,8 @@ void Automatic::init() {
     fillAll(43, 0);
 }
 
+
+//使所有char从from状态转移到to状态
 void Automatic::fillChars(int from, int to) {
     for(char val = 'a'; val <= 'z'; val++) {
         ac[from][val] = to;
@@ -146,6 +148,7 @@ void Automatic::fillChars(int from, int to) {
     }
 }
 
+//使所有数字从from状态转移到to状态
 void Automatic::fillNum(int from, int to) {
     for(char val = '0'; val <= '9'; val++) {
         ac[from][val] = to;
@@ -156,6 +159,7 @@ void Automatic::fillState(int from, char val, int to) {
     ac[from][val] = to;
 }
 
+//使所有界符从from状态转移到to状态
 void Automatic::fillDelimter(int from, int to) {
     vector<char> delimter = {',', '(', ')', '[', ']', '{', '}', ';'};
     for(auto c : delimter) {
@@ -163,6 +167,7 @@ void Automatic::fillDelimter(int from, int to) {
     }
 }
 
+//使所有字符从from状态转移到to状态
 void Automatic::fillAll(int from, int to) {
     for(int j = 0; j < 256; ++j) {
         //避免出现覆盖问题
@@ -171,10 +176,12 @@ void Automatic::fillAll(int from, int to) {
     }
 }
 
+//自动机初始化
 Automatic::Automatic() {
     init();
 }
 
+//得到相应状态
 int Automatic::getState(int state, char c) {
     return ac[state][c];
 }

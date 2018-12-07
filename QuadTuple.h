@@ -11,16 +11,18 @@
 using namespace std;
 
 
-
-struct QuadTuple {
-    QuadTuple(const string& op, const string &name1, const string &name2, const string &res) : op(op),
-                                                                                               name1(name1),
-                                                                                               name2(name2),
-                                                                                               res(res) {};
+class QuadTuple {
+public:
     string op;
     string name1;
     string name2;
     string res;
+    QuadTuple(string o,  string n1, string n2, string r) {
+        op = o;
+        name1 = n1;
+        name2 = n2;
+        res = r;
+    }
 
 };
 

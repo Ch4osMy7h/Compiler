@@ -85,25 +85,25 @@
         10       int         2
          ]  delimter         9
          ;  delimter        12
-         a identifer        27
+       int   keyword         3
+         t identifer        27
+         ;  delimter        12
+         a identifer        28
          =  delimter        19
          1       int         3
          ;  delimter        12
-         b identifer        28
+         b identifer        29
          =  delimter        19
          2       int         4
          ;  delimter        12
-         x identifer        29
+         x identifer        30
          =  delimter        19
          5       int         5
          ;  delimter        12
-         y identifer        30
+         y identifer        31
          =  delimter        19
         10       int         6
          ;  delimter        12
-        yt identifer        31
-         =  delimter        19
-         5       int         7
        gcd identifer        32
          (  delimter         6
          a identifer        33
@@ -124,38 +124,54 @@
          >  delimter         0
          b identifer        39
          )  delimter         7
-         a identifer        40
+         {  delimter        10
+        if   keyword        20
+         (  delimter         6
+         b identifer        40
+         >  delimter         0
+         c identifer        41
+         )  delimter         7
+         {  delimter        10
+         c identifer        42
          =  delimter        19
-         b identifer        41
+         b identifer        43
+         +  delimter         1
+         1       int         7
+         ;  delimter        12
+         }  delimter        11
+         a identifer        44
+         =  delimter        19
+         b identifer        45
          +  delimter         1
          1       int         8
          ;  delimter        12
+         }  delimter        11
       else   keyword        21
-         b identifer        42
+         b identifer        46
          =  delimter        19
-         a identifer        43
+         a identifer        47
          +  delimter         1
          1       int         9
          ;  delimter        12
      while   keyword        26
          (  delimter         6
-         x identifer        44
+         x identifer        48
          <  delimter        17
         10       int        10
          )  delimter         7
          {  delimter        10
-         x identifer        45
+         x identifer        49
          =  delimter        19
-         x identifer        46
+         x identifer        50
          +  delimter         1
          1       int        11
          ;  delimter        12
-         s identifer        47
+         s identifer        51
          [  delimter         8
          2       int        12
          ]  delimter         9
          =  delimter        19
-         s identifer        48
+         s identifer        52
          [  delimter         8
          3       int        13
          ]  delimter         9
