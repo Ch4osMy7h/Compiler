@@ -28,7 +28,7 @@ struct ConstTable {
 
 struct ArrayInfo {
     unsigned int low, up;
-    int type;
+    Type type;
     unsigned int clen;
 };
 

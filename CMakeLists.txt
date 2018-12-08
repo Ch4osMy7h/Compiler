@@ -3,4 +3,29 @@ project(Compiler)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Compiler Token.h  Token.cpp front-end/Automatic.cpp front-end/Automatic.h Scanner.cpp Scanner.h MyUtils.h main.cpp Table.h TypeTable.h TypeTable.cpp SymbolTable.cpp SymbolTable.h front-end/Parse.cpp front-end/Parse.h QuadTuple.h back-end/DAG.cpp back-end/DAG.h)
+include_directories(.)
+include_directories(back-end)
+include_directories(front-end)
+
+add_executable(Compiler
+        back-end/DAG.cpp
+        back-end/DAG.h
+        front-end/Automatic.cpp
+        front-end/Automatic.h
+        front-end/Parse.cpp
+        front-end/Parse.h
+        lex.txt
+        main.cpp
+        MyUtils.h
+        QuadTuple.h
+        README.md
+        Scanner.cpp
+        Scanner.h
+        src.txt
+        SymbolTable.cpp
+        SymbolTable.h
+        Table.h
+        Token.cpp
+        Token.h
+        TypeTable.cpp
+        TypeTable.h)

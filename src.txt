@@ -3,7 +3,6 @@ int gcd(int u,int v){
     if (v==0) return u;
     else return gcd(v,u-(u/v)*v);
 }
-
 int add(int x,int y){
     int z;
     z=x+y;
@@ -15,7 +14,6 @@ int main (){
    int x;
    int y;
    int s[10];
-   int t;
    a=1;
    b=2;
    x=5;
@@ -23,17 +21,7 @@ int main (){
    /*a-12345*/
    gcd(a,b);
    add(x,y);
-   int i;
-   /*niubie*/
-   if (a>b) {
-       while(i < 10) {
-          i = i + 1;
-       }
-       if(b > c) {
-        c = b + 1;
-       }
-       a=b+1;
-   }
+   if (a>b) a=b+1;
    else b=a+1;
    while (x<10){
       x=x+1;

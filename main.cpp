@@ -36,5 +36,8 @@ int main(void) {
     */
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
+    for(int i = 0; i < quadVec.size(); i++) {
+        quadVec[i].print();
+    }
     return 0;
 }

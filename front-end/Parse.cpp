@@ -73,7 +73,6 @@ int Parse::varDeclaration() {
             exit(0);
         }
         string curName = tokenVec[curIndex].name;
-        TokenType curType = tokenVec[curIndex].type;
         //全局变量
         if(curFun == -1) {
             int stIndex = 0;
@@ -130,7 +129,7 @@ int Parse::varDeclaration() {
                 quadVec.emplace_back("vardef", curName, "arr", "__");
                 ArrayInfo arrayInfoEle{};
                 arrayInfoEle.low = 0;
-                arrayInfoEle.type = curType;
+                arrayInfoEle.type = toType(curType);
                 arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
                 arrayInfoEle.clen = typeSize(curType);
                 st.arrayTableVec.push_back(arrayInfoEle);
@@ -139,7 +138,8 @@ int Parse::varDeclaration() {
                 st.tokenTable[curSymInd].ai = static_cast<int>(st.arrayTableVec.size() - 1);
                 st.tokenTable[curSymInd].len = arrayInfoEle.clen * arrLen;
             } else {
-                quadVec.emplace_back("vardef", curName, toTypeName(curType), "__");
+                quadVec.emplace_back("vardef", curName, curType, "__");
+                //cout << "1" << endl;
             }
         } else {
             if(arrayFlag) {
@@ -157,8 +157,8 @@ int Parse::varDeclaration() {
 int Parse::typeSpecifier() {
     int index = curIndex;
     if(tokenVec[curIndex].type == KEYWORD && isType(tokenVec[curIndex])) {
+        curType = tokenVec[curIndex].name;
         curIndex++;
-        curType = tokenVec[curIndex].type;
         return 1;
     } else {
         curIndex = index;
@@ -195,21 +195,24 @@ int Parse::funDeclaration() {
             exit(0);
         }
         //函数开始四元式生成
-        quadVec.emplace_back("fundef", curName, toTypeName(TokenType (curType)), paraNum);
+        quadVec.emplace_back("fundef", curName, curType, to_string(paraNum));
         curSymInd++;
         st.tokenTable.emplace_back( SymbolTableElement());
         st.tokenTable[curSymInd].name = curName;
-        st.tokenTable[curSymInd].type = Type(curType);
+        st.tokenTable[curSymInd].type = toType(curType);
         st.tokenTable[curSymInd].cat = Category::FUNCTION;
         st.tokenTable[curSymInd].addr = static_cast<int>(st.functionTableVec.size());
         FunctionTable ft;
         ft.fn = paraNum;
         auto iter_type = paramType.begin(); auto iter_name = paramName.begin();
         while(iter_type != paramType.end() && iter_name != paramName.end()) {
-            ft.pi.emplace_back(ParamInfo(*iter_name, *iter_type, true));
+            ft.pi.emplace_back(ParamInfo(*iter_name, toType(*iter_type), true));
+            quadVec.emplace_back("paradef", *iter_type, *iter_name, "__");
             iter_type++; iter_name++;
-            quadVec.emplace_back("paradef", toSymTypeName(*iter_type), *iter_name, "__");
         }
+        paramType.clear();
+        paramName.clear();
+        paraNum = 0;
         st.functionTableVec.push_back(ft);
 
         if(compoundStmt(false)) {
@@ -251,6 +254,7 @@ int Parse::paramList() {
 int Parse::param() {
     int index = curIndex;
     if(typeSpecifier()) {
+        bool arrayFlag = false;
         string curName;
         if(tokenVec[curIndex].type == IDENTIFIER) {
             curName = tokenVec[curIndex].name;
@@ -263,11 +267,19 @@ int Parse::param() {
             curIndex++;
             if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"] == tokenVec[curIndex].id) {
                 curIndex++;
+                arrayFlag = true;
             } else {
                 cout << "Error occured when missing \"]\" char" << endl;
                 exit(0);
             }
         }
+        if(arrayFlag) {
+            paramType.emplace_back("arr");
+            paramName.push_back(curName);
+            return 1;
+        }
+        paramType.push_back(curType);
+        paramName.push_back(curName);
         return 1;
     }
     curIndex = index;
@@ -275,7 +287,6 @@ int Parse::param() {
 }
 
 int Parse::compoundStmt(bool isOutput) {
-    int index = curIndex;
     if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["{"] == tokenVec[curIndex].id) {
         curIndex++;
         localDeclarations();
@@ -283,7 +294,7 @@ int Parse::compoundStmt(bool isOutput) {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["}"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
-            cout << curIndex << endl;
+            //cout << curIndex << endl;
             cout << "Error occured when missing \"}\" char" << endl;
             exit(0);
         }
@@ -327,7 +338,7 @@ int Parse::statement() {
 }
 
 int Parse::expressionStmt() {
-    bool isExpression = false;
+    //bool isExpression = false;
     if(expression()) {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
             curIndex++;
@@ -346,12 +357,11 @@ int Parse::expressionStmt() {
 }
 
 int Parse::selectionStmt() {
-    int index = curIndex;
     if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["if"] == tokenVec[curIndex].id) {
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
             curIndex++;
-            quadVec.emplace_back(QuadTuple("if", "##", "##", "##"));
+            quadVec.emplace_back(QuadTuple("if", "__", "__", "__"));
         } else {
             cout << "if语句缺少左括号" << endl;
             exit(0);
@@ -369,13 +379,14 @@ int Parse::selectionStmt() {
             cout << "if语句缺少右括号" << endl;
             exit(0);
         }
-        quadVec.emplace_back(QuadTuple("ifbegin", "##", "##", "##"));
+        quadVec.emplace_back(QuadTuple("ifbegin", curTmpName, "__", "__"));
+        //sem.pop();
         if(!statement()) {
             cout << "statement语句表达式错误" << endl;
             exit(0);
         }
         if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["else"] == tokenVec[curIndex].id) {
-            quadVec.emplace_back(QuadTuple("else", "##", "##", "##"));
+            quadVec.emplace_back(QuadTuple("else", "__", "__", "__"));
             curIndex++;
             if(!statement()) {
                 cout << "else 语句表达式错误" << endl;
@@ -391,7 +402,7 @@ int Parse::selectionStmt() {
 int Parse::iterationStmt() {
     if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["while"] == tokenVec[curIndex].id) {
         curIndex++;
-        quadVec.emplace_back("while", "##", "##", "##");
+        quadVec.emplace_back("while", "__", "__", "__");
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
@@ -404,7 +415,8 @@ int Parse::iterationStmt() {
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
            curIndex++;
-            quadVec.emplace_back("whilebegin", "##", "##", "##");
+            quadVec.emplace_back("do", curTmpName, "__", "__");
+            //sem.pop();
         } else {
             cout <<"while缺少右括号" << endl;
             exit(0);
@@ -413,7 +425,7 @@ int Parse::iterationStmt() {
             cout << "while函数定义出现错误" << endl;
             exit(0);
         }
-        quadVec.emplace_back("whileend", "##", "##", "##");
+        quadVec.emplace_back("whileend", "__", "__", "__");
         return 1;
     }
     return 0;
@@ -423,9 +435,10 @@ int Parse::returnStmt() {
     if(tokenVec[curIndex].type == KEYWORD && keyWordTable.index["return"] == tokenVec[curIndex].id) {
         curIndex++;
         if(!expression()) {
-            quadVec.emplace_back("return", "##", "##", "##");
+            quadVec.emplace_back("return", "__", "__", "__");
         } else {
-            //quadVec.emplace_back("return", to_string(), "##", "##");
+            //return语句四元式设计
+            quadVec.emplace_back("return", expName, "__", "__");
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
             curIndex++;
@@ -439,22 +452,38 @@ int Parse::returnStmt() {
 }
 
 int Parse::expression() {
+    /*
+     * 后期加入类型不匹配检查
+     */
+
+    //用于重定义检查
+    Type varType;
+    Type expType;
+
+
     int index = curIndex;
+    string tmpExp;
+    string tmpVar;
+
     if(var()) {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["="] == tokenVec[curIndex].id) {
             curIndex++;
+            tmpVar = varName;
             if (expression()) {
-
+                tmpExp = expName;
             } else {
                 cout << "表达式错误" << endl;
                 exit(0);
             }
+            quadVec.emplace_back("=", tmpExp, "__", tmpVar);
+            expName = tmpVar;
             //符号表
             return 1;
         }
     }
     curIndex = index;
     if(simpleExpression()) {
+        expName = simExpName;
         return 1;
     }
     curIndex = index;
@@ -462,7 +491,9 @@ int Parse::expression() {
 }
 
 int Parse::var() {
+    string helper;
     if(tokenVec[curIndex].type == IDENTIFIER) {
+        helper = tokenVec[curIndex].name;
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["["] == tokenVec[curIndex].id) {
             curIndex++;
@@ -473,6 +504,7 @@ int Parse::var() {
                 exit(0);
             }
             if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"] == tokenVec[curIndex].id) {
+                varName = helper + "[" + expName + "]";
                 curIndex++;
             } else {
                 cout << "数组缺少]" << endl;
@@ -480,6 +512,7 @@ int Parse::var() {
             }
             return 1;
         }
+        varName = helper;
         return 1;
     }
     return 0;
@@ -487,15 +520,20 @@ int Parse::var() {
 
 int Parse::simpleExpression() {
     int index = curIndex;
+    string helper;
     if(additiveExpression()) {
+        helper = relopTmp;
         if(relop()) {
-            if(additiveExpression()) {
-
+            if (additiveExpression()) {
+                curTmpName = "t" + to_string(++t_num);
+                quadVec.emplace_back(relopName, helper, relopTmp, curTmpName);
+                expName = curTmpName;
             } else {
                 cout << "表达式错误" << endl;
                 exit(0);
             }
         }
+        simExpName = relopTmp;
         return 1;
     }
     curIndex = index;
@@ -504,6 +542,7 @@ int Parse::simpleExpression() {
 
 int Parse::relop() {
     if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["<="] == tokenVec[curIndex].id || delimiterTable.index["<"] == tokenVec[curIndex].id || delimiterTable.index[">"] == tokenVec[curIndex].id || delimiterTable.index[">="] == tokenVec[curIndex].id || delimiterTable.index["=="] == tokenVec[curIndex].id || delimiterTable.index["!="] == tokenVec[curIndex].id )) {
+        relopName = tokenVec[curIndex].name;
         curIndex++;
         return 1;
     }
@@ -511,15 +550,20 @@ int Parse::relop() {
 }
 
 int Parse::additiveExpression() {
+    string helper;
     if(term())  {
+        helper = addTmp;
         if(addop()) {
             if(!term()) {
                 cout << "addop后面缺少表达式" << endl;
-                cout << tokenVec[curIndex].name << endl;
                 exit(0);
             }
+            curTmpName = "t"+to_string(++t_num);
+            quadVec.emplace_back(addopName, helper, addTmp, curTmpName);
+            relopTmp = curTmpName;
             return 1;
         }
+        relopTmp = addTmp;
         return 1;
     }
     return 0;
@@ -527,6 +571,7 @@ int Parse::additiveExpression() {
 
 int Parse::addop() {
     if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["+"] == tokenVec[curIndex].id ||delimiterTable.index["-"] == tokenVec[curIndex].id )) {
+        addopName = tokenVec[curIndex].name;
         curIndex++;
         return 1;
     }
@@ -534,15 +579,22 @@ int Parse::addop() {
 }
 
 int Parse::term() {
-    if(factor()) {
-        if(mulop()) {
-            if(term()) {
+    string helper_factor, helper_term;
+    if (factor()) {
+        helper_factor = multiTmp;
+        if (mulop()) {
+            if (term()) {
+                helper_term = addTmp;
+                curTmpName = "t" + to_string(++t_num);
+                quadVec.emplace_back(multiopName, helper_factor, helper_term, curTmpName);
+                addTmp = curTmpName;
                 return 1;
             } else {
                 cout << "缺少表达式" << endl;
                 exit(0);
             }
         }
+        addTmp = multiTmp;
         return 1;
     }
     return 0;
@@ -550,6 +602,7 @@ int Parse::term() {
 
 int Parse::mulop() {
     if(tokenVec[curIndex].type == DELIMTER && (delimiterTable.index["*"] == tokenVec[curIndex].id ||delimiterTable.index["/"] == tokenVec[curIndex].id )) {
+        multiopName = tokenVec[curIndex].name;
         curIndex++;
         return 1;
     }
@@ -566,6 +619,7 @@ int Parse::factor() {
         if(expression()) {
             if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
                 curIndex++;
+                multiTmp = expName;
                 return 1;
             } else {
                 cout << curIndex << " " << tokenVec[curIndex-1].name << endl;
@@ -578,10 +632,12 @@ int Parse::factor() {
         }
     }
     if(isNum(tokenVec[curIndex])) {
+        multiTmp = tokenVec[curIndex].name;
         curIndex++;
         return 1;
     }
     if(var()) {
+        multiTmp = varName;
         return 1;
     }
     curIndex = index;
@@ -590,9 +646,12 @@ int Parse::factor() {
 
 int Parse::call() {
     int index = curIndex;
+    string curName;
     if(tokenVec[curIndex].type == IDENTIFIER) {
+        curName = tokenVec[curIndex].name;
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
+            quadVec.emplace_back("funcall", curName, "__", "__");
             curIndex++;
             if(args()) {
                 if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
@@ -609,6 +668,7 @@ int Parse::call() {
             curIndex = index;
             return 0;
         }
+        quadVec.emplace_back("callend", "__", "__", "__");
         return 1;
     }
     curIndex = index;
@@ -624,13 +684,18 @@ int Parse::args() {
 
 int Parse::argList() {
     if(expression())  {
-        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id)  {
+        paramCall.emplace_back(expName);
+        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id) {
             curIndex++;
-            if(!argList())  {
+            if (!argList()) {
                 cout << ",后没有参数定义" << endl;
                 exit(0);
             }
         }
+        for(auto val : paramCall) {
+            quadVec.emplace_back("paramin", val, "__", "__");
+        }
+        paramCall.clear();
         return 1;
     }
     return 0;
@@ -647,7 +712,7 @@ int Parse::localDeclarations() {
 }
 
 bool Parse::isNum(Token &token) {
-    return token.type == FLOATCONST ||  token.type == INTCONST;
+    return token.type == FLOATCONST ||  token.type == INTCONST || token.type == CHARCONST;
 }
 
 void Parse::parse() {
@@ -657,40 +722,45 @@ void Parse::parse() {
     //cout << curIndex << endl;
 }
 
-unsigned int Parse::typeSize(TokenType type) {
-    if(curType == INTCONST) {
+unsigned int Parse::typeSize(string curType) {
+    if(curType == "int") {
         return 4;
-    } else if(curType == FLOATCONST) {
+    } else if(curType == "double" || curType == "float") {
         return 8;
-    } else if(curType == CHARCONST) {
+    } else if(curType == "char") {
         return 1;
     }
     return 0;
 }
 
-string Parse::toTypeName(TokenType type) {
-    if(type == TokenType::INTCONST) {
-        return "i";
-    } else if(type == TokenType::FLOATCONST) {
-        return "f";
-    } else if(type == TokenType::CHARCONST) {
-        return "c";
-    }
-    cout << "不是合法的数据类型" << endl;
-    exit(0);
-}
+
 
 string Parse::toSymTypeName(Type &type) {
+
     if(type == Type::INT) {
-        return "i";
+        return "int";
     } else if(type == Type::BOOL) {
-        return "b";
+        return "bool";
     } else if(type == Type::CHAR) {
-        return "c";
+        return "char";
     } else if(type == Type::DOUBLE) {
-        return "f";
+        return "double";
     }
     return "";
+}
+
+Type Parse::toType(string basic_string) {
+    if(basic_string == "int") {
+        return Type::INT;
+    } else if(basic_string == "bool") {
+        return Type::BOOL;
+    } else if(basic_string == "float" || basic_string == "double") {
+        return Type ::DOUBLE;
+    } else if(basic_string == "char") {
+        return Type ::CHAR;
+    } else if(basic_string == "arr") {
+        return Type ::ARRAY;
+    }
 }
 
 

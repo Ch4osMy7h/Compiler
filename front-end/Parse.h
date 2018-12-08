@@ -5,7 +5,7 @@
 #ifndef COMPILER_PARSE_H
 #define COMPILER_PARSE_H
 
-#include "bits/stdc++.h"
+#include <bits/stdc++.h>
 #include "../QuadTuple.h"
 #include "../Token.h"
 #include "../SymbolTable.h"
@@ -28,15 +28,36 @@ private:
     FloatTable& floatTable;
     CharTable& charTable;
     StringTable& stringTable;
-    stack<Token> sem;
+    stack<string> sem;
     int curIndex;
     int curFun;
     int funCnt;
     int curSymInd;
-    int curType;
+    string curType;
     int paraNum; //记录参数个数
-    vector<Type > paramType;
+    vector<string> paramType;
     vector<string> paramName;
+
+    //函数调用传入参数
+    vector<string> paramCall;
+
+
+    //用于赋值表达式的生成
+    string varName;
+    string expName;
+    string simExpName;
+    int t_num = -1;
+
+    //用于算术表达式等的生成
+    string relopTmp;
+    string addTmp;
+    string multiTmp;
+    string relopName;
+    string addopName;
+    string multiopName;
+    string curTmpName;
+
+
 public:
     Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
               IdentiferTable &it, DelimiterTable &dt, IntTable &inTable, FloatTable &ft, CharTable &ct,
@@ -73,11 +94,12 @@ public:
     int argList();                     //调用参数列表
     bool isType(Token token);           //是否是类型关键字
     bool isNum(Token &token);           //是否是数字
-    unsigned int typeSize(TokenType type);
+    unsigned int typeSize(string type);
 
-    string toTypeName(TokenType type);
 
     string toSymTypeName(Type &type);
+
+    Type toType(string basic_string);
 };
 
 
