@@ -22,11 +22,8 @@ using namespace std;
 Parse::Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
              IdentiferTable &it, DelimiterTable &dt, IntTable &inTable, FloatTable &ft, CharTable &ct,
              StringTable &stTable) : quadVec(quadVec), tokenVec(tokenVec), st(st), keyWordTable(kt), identiferTable(it), delimiterTable(dt), intTable(inTable), floatTable(ft), charTable(ct), stringTable(stTable){
-
     this->curIndex = 0;
-    this->curFun = -1;
-    this->funCnt = 0;
-    this->curSymInd = -1;
+    this->curFun = 0;
     this->paraNum = 0;
 }
 
@@ -74,29 +71,19 @@ int Parse::varDeclaration() {
         }
         string curName = tokenVec[curIndex].name;
         //全局变量
-        if(curFun == -1) {
-            int stIndex = 0;
-            stIndex = st.searchSymbolName(tokenVec[curIndex].name);
-            if(stIndex >= 0) {
-                cout << "redefined variable or function name" << endl;
-                exit(0);
-            }
-            st.tokenTable.emplace_back(SymbolTableElement());
-            curSymInd++;
-            st.tokenTable[curSymInd].name = curName;
-            st.tokenTable[curSymInd].cat = Category::VARIABLE;
-        } else {
-            int stIndex = 0;
-            stIndex = st.searchSymbolName(tokenVec[curIndex].name);
-            if(stIndex >= 0) {
-                cout << "redefined variable or function name" << endl;
-                exit(0);
-            }
-            curSymInd++;
-            st.tokenTable[curSymInd].name = curName;
-            st.tokenTable[curSymInd].cat = VARIABLE;
-            //st.ft[curFun].pi
+        int stIndex = 0;
+        stIndex = st.searchSymbolName(tokenVec[curIndex].name, true);
+        if(stIndex >= 0) {
+            cout << "redefined variable or function name" << endl;
+            exit(0);
         }
+        curSymInd++;
+        st.symbolTable[curFun].emplace_back(SymbolTableElement());
+        int symind = static_cast<int>(st.symbolTable[funCnt].size() - 1);
+        st.symbolTable[curFun][symind].name = curName;
+        st.symbolTable[curFun][symind].cat = Category::VARIABLE;
+
+
         bool arrayFlag = false;
         curIndex++;
         int arrLen = 0;
@@ -123,30 +110,23 @@ int Parse::varDeclaration() {
         } else {
             cout << "变量声明缺少；语句" << endl;
         }
-        //语义动作
-        if(curFun == -1) {
-            if(arrayFlag) {
-                quadVec.emplace_back("vardef", curName, "arr", "__");
-                ArrayInfo arrayInfoEle{};
-                arrayInfoEle.low = 0;
-                arrayInfoEle.type = toType(curType);
-                arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
-                arrayInfoEle.clen = typeSize(curType);
-                st.arrayTableVec.push_back(arrayInfoEle);
-                st.tokenTable.emplace_back( SymbolTableElement());
-                st.tokenTable[curSymInd].type = ARRAY;
-                st.tokenTable[curSymInd].ai = static_cast<int>(st.arrayTableVec.size() - 1);
-                st.tokenTable[curSymInd].len = arrayInfoEle.clen * arrLen;
-            } else {
-                quadVec.emplace_back("vardef", curName, curType, "__");
-                //cout << "1" << endl;
-            }
-        } else {
-            if(arrayFlag) {
-                quadVec.emplace_back("vardef", curName, "arr", "__");
-            }else {
-                quadVec.emplace_back("vardef", curName, "arr", "--");
-            }
+        if(arrayFlag) {
+            quadVec.emplace_back("vardef", curName, "arr", "__");
+            ArrayInfo arrayInfoEle{};
+            arrayInfoEle.low = 0;
+            arrayInfoEle.type = toType(curType);
+            arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
+            arrayInfoEle.clen = typeSize(curType);
+            st.arrayTableVec.push_back(arrayInfoEle);
+            st.symbolTable[funCnt][symind].type = ARRAY;
+            st.symbolTable[funCnt][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
+            st.symbolTable[funCnt][symind].len = arrayInfoEle.clen * arrLen;
+        }else {
+            quadVec.emplace_back("vardef", curName, curType, "--");
+            st.symbolTable[funCnt][symind].type = toType(curType);
+            /*
+             * vall
+             */
         }
         return 1;
     }
@@ -196,14 +176,24 @@ int Parse::funDeclaration() {
         }
         //函数开始四元式生成
         quadVec.emplace_back("fundef", curName, curType, to_string(paraNum));
-        curSymInd++;
-        st.tokenTable.emplace_back( SymbolTableElement());
-        st.tokenTable[curSymInd].name = curName;
-        st.tokenTable[curSymInd].type = toType(curType);
-        st.tokenTable[curSymInd].cat = Category::FUNCTION;
-        st.tokenTable[curSymInd].addr = static_cast<int>(st.functionTableVec.size());
+
+        vector<SymbolTableElement> stelement;
+        stelement.emplace_back( SymbolTableElement());
         FunctionTable ft;
-        ft.fn = paraNum;
+        ft.paramNum = paraNum;
+        //ft.off
+        st.symbolTable.emplace_back(stelement);
+        curFun++;
+        st.symbolTable[curFun][0].name = curName;
+        st.symbolTable[curFun][0].type = toType(curType);
+        st.symbolTable[curFun][0].cat = Category ::FUNCTION;
+
+//        st.tokenTable[curSymInd].name = curName;
+//        st.tokenTable[curSymInd].type = toType(curType);
+//        st.tokenTable[curSymInd].cat = Category::FUNCTION;
+//        st.tokenTable[curSymInd].addr = static_cast<int>(st.functionTableVec.size());
+//        FunctionTable ft;
+//        ft.fn = paraNum;
         auto iter_type = paramType.begin(); auto iter_name = paramName.begin();
         while(iter_type != paramType.end() && iter_name != paramName.end()) {
             ft.pi.emplace_back(ParamInfo(*iter_name, toType(*iter_type), true));
@@ -214,8 +204,13 @@ int Parse::funDeclaration() {
         paramName.clear();
         paraNum = 0;
         st.functionTableVec.push_back(ft);
+        //符号表链接
+        st.symbolTable[curFun][0].pfinalind = static_cast<int>(st.functionTableVec.size() - 1);
 
-        if(compoundStmt(false)) {
+
+
+
+        if(compoundStmt()) {
             quadVec.emplace_back("funend", "__", "__", "__");
             return 1;
         } else {
@@ -286,7 +281,7 @@ int Parse::param() {
     return 0;
 }
 
-int Parse::compoundStmt(bool isOutput) {
+int Parse::compoundStmt() {
     if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["{"] == tokenVec[curIndex].id) {
         curIndex++;
         localDeclarations();
@@ -456,27 +451,33 @@ int Parse::expression() {
      * 后期加入类型不匹配检查
      */
 
-    //用于重定义检查
-    Type varType;
-    Type expType;
 
 
     int index = curIndex;
     string tmpExp;
     string tmpVar;
+    Type tmpExpType;
+    Type tmpVarType;
+
 
     if(var()) {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["="] == tokenVec[curIndex].id) {
             curIndex++;
             tmpVar = varName;
+            tmpVarType = varType;
             if (expression()) {
                 tmpExp = expName;
+                tmpExpType = expType;
+                if(tmpExpType != tmpVarType) {
+                    cout << "类型不匹配" << endl;
+                }
             } else {
                 cout << "表达式错误" << endl;
                 exit(0);
             }
             quadVec.emplace_back("=", tmpExp, "__", tmpVar);
             expName = tmpVar;
+            expType = tmpExpType;
             //符号表
             return 1;
         }
@@ -484,6 +485,7 @@ int Parse::expression() {
     curIndex = index;
     if(simpleExpression()) {
         expName = simExpName;
+        expType = simExpType;
         return 1;
     }
     curIndex = index;
@@ -760,6 +762,12 @@ Type Parse::toType(string basic_string) {
         return Type ::CHAR;
     } else if(basic_string == "arr") {
         return Type ::ARRAY;
+    }
+}
+
+void Parse::print() {
+    for(auto &i: quadVec) {
+        i.print();
     }
 }
 

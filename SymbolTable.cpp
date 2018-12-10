@@ -12,9 +12,6 @@ void SymbolTable::print() {
     cout << "             SymbolTable            " << endl;
     cout << "====================================" << endl;
     cout << "ID\tName\tType\tCat\tAddr" << endl;
-    for(int i = 0; i < tokenTable.size(); ++i) {
-        cout << i << "\t" << tokenTable[i].name << "\t" << tokenTable[i].type << "\t" << tokenTable[i].cat << "\t" << tokenTable[i].addr << endl;
-    }
 }
 
 

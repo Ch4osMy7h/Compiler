@@ -17,20 +17,12 @@ enum Type {
     ARRAY = 5
 };
 
-
-
-struct ConstTable {
-    double num;
-};
-
-
-
-
 struct ArrayInfo {
     unsigned int low, up;
     Type type;
     unsigned int clen;
 };
+
 
 struct ParamInfo {
     string name;
@@ -38,6 +30,7 @@ struct ParamInfo {
     //vector<ArrayInfo> ai;
     //int vall;
     bool isFormalParam;
+    //int num;
     ParamInfo(string n, Type t, bool is) {
         name = n;
         type = t;
@@ -46,9 +39,10 @@ struct ParamInfo {
 };
 
 struct FunctionTable {
-    int fn;
+    int paramNum;
     vector<ParamInfo> pi;
     int entry;
+    int off;
 };
 
 
@@ -67,34 +61,35 @@ enum Category {
 struct SymbolTableElement {
     string name;
     Type type;
-    Category cat;
-    int addr;
-    ConstTable* ct{};
-    int len{};
-    int ai;
-    Vall* vall{};
-    SymbolTableElement() {
-        name = "";
-        type = INT;
-        //cat = -1;
-        cat = NONE;
-        addr = -1;
-        ai = -1;
-    }
+    Category cat;  //种类
+    int ctInd;  //常数表index
+    int len;    //长度表
+    int aiInd;  //数组表index
+    int vall;   //值单元分配
+    int pfinalind; //如果是函数就给他分配函数表
+    double constNum; //if这是个const
 };
 
 
 
 
 
-class SymbolTable : public Table<SymbolTableElement> {
+class SymbolTable {
 public:
+    int curSymInd = 0;
+    //全局变量就用0对应的symbolTable
+    vector<vector<SymbolTableElement>> symbolTable; //符号表总表
     vector<FunctionTable> functionTableVec;
     vector<ArrayInfo> arrayTableVec;
-    void fillStructVal(string name);
-    void print();
     int searchSymbolName(string name);
     friend bool operator<(const SymbolTableElement& ls, SymbolTableElement& rs);
+    void print();
+    SymbolTable() {
+        //全局符号表初始化
+        vector<SymbolTableElement> allScopeVar;
+        symbolTable.push_back(allScopeVar);
+    }
+
 };
 
 

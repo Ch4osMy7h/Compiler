@@ -44,14 +44,18 @@ private:
 
     //用于赋值表达式的生成
     string varName;
+    Type varType;
     string expName;
+    Type expType;
     string simExpName;
+    Type simExpType;
+
     int t_num = -1;
 
     //用于算术表达式等的生成
-    string relopTmp;
-    string addTmp;
-    string multiTmp;
+    string relopTmp; Type relopType;
+    string addTmp;  Type addType;
+    string multiTmp; Type multiType;
     string relopName;
     string addopName;
     string multiopName;
@@ -72,7 +76,7 @@ public:
     int params();                      //参数声明
     int paramList();                   //参数列表
     int param();                       //单个参数
-    int compoundStmt(bool isOutput);    //复合语句
+    int compoundStmt();                 //复合语句
     int localDeclarations();           //本地变量声明
     int statementList();               //语句列表
     int statement();                    //语句
@@ -100,6 +104,8 @@ public:
     string toSymTypeName(Type &type);
 
     Type toType(string basic_string);
+
+    void print();
 };
 
 
