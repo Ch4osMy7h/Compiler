@@ -15,4 +15,8 @@ T string2num(string str) {
     return num;
 }
 
+bool isNum(string str);
+
+string calculateNum(string op, string a, string b);
+
 #endif //COMPILER_MYUTILS_H
