@@ -115,6 +115,8 @@ public:
     bool typePriority(Type left, Type right);
 
     bool isChar(Token &token);
+
+    Type typeSwitch(Type type, Type addType);
 };
 
 

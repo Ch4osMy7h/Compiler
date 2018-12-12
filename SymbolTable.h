@@ -56,7 +56,8 @@ enum Category {
     FUNCTION = 1,
     CONST = 2,
     VARIABLE = 3,
-    NONE = 4
+    NONE = 4,
+    FORMALPARAM = 5
 };
 
 struct SymbolTableElement {

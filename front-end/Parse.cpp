@@ -82,7 +82,7 @@ int Parse::varDeclaration() {
 
         curSymInd++;
         st.symbolTable[curFun].emplace_back(SymbolTableElement());
-        int symind = static_cast<int>(st.symbolTable[funCnt].size() - 1);
+        int symind = static_cast<int>(st.symbolTable[curFun].size() - 1);
         st.symbolTable[curFun][symind].name = curName;
         st.symbolTable[curFun][symind].cat = Category::VARIABLE;
 
@@ -193,6 +193,7 @@ int Parse::funDeclaration() {
         st.symbolTable[curFun][0].cat = Category ::FUNCTION;
 
 
+
 //        st.tokenTable[curSymInd].name = curName;
 //        st.tokenTable[curSymInd].type = toType(curType);
 //        st.tokenTable[curSymInd].cat = Category::FUNCTION;
@@ -202,6 +203,14 @@ int Parse::funDeclaration() {
         auto iter_type = paramType.begin(); auto iter_name = paramName.begin();
         while(iter_type != paramType.end() && iter_name != paramName.end()) {
             ft.pi.emplace_back(ParamInfo(*iter_name, toType(*iter_type), true));
+            st.symbolTable[curFun].emplace_back(SymbolTableElement());
+            int symInd = static_cast<int>(st.symbolTable[curFun].size() - 1);
+            st.symbolTable[curFun][symInd].name = *iter_name;
+            st.symbolTable[curFun][symInd].type = toType(*iter_type);
+            st.symbolTable[curFun][symInd].cat = Category ::FORMALPARAM;
+//            st.symbolTable[curFun][symInd].vall = 0;
+
+
             quadVec.emplace_back("paradef", *iter_type, *iter_name, "__");
             iter_type++; iter_name++;
         }
@@ -480,6 +489,7 @@ int Parse::expression() {
                 cout << "表达式错误" << endl;
                 exit(0);
             }
+
             quadVec.emplace_back("=", tmpExp, "__", tmpVar);
             expName = tmpVar;
             expType = tmpExpType;
@@ -541,7 +551,11 @@ int Parse::simpleExpression() {
                 }
                 curTmpName = "t" + to_string(++t_num);
                 quadVec.emplace_back(relopName, helper, relopTmp, curTmpName);
-
+                st.symbolTable[curFun].push_back(SymbolTableElement());
+                auto symInd = st.symbolTable[curFun].size() - 1;
+                st.symbolTable[curFun][symInd].name = curTmpName;
+                st.symbolTable[curFun][symInd].type = Type::BOOL;
+                st.symbolTable[curFun][symInd].cat = Category ::CONST;
                 expName = curTmpName;
             } else {
                 cout << "表达式错误" << endl;
@@ -582,10 +596,21 @@ int Parse::additiveExpression() {
 //                cout << helper_Type << " " << addType << endl;
                 exit(0);
             }
+
+            Type resType = typeSwitch(helper_Type, addType);
+
+
             curTmpName = "t"+to_string(++t_num);
             quadVec.emplace_back(addopName, helper, addTmp, curTmpName);
             relopTmp = curTmpName;
             relopType = addType;
+
+            //符号表
+            st.symbolTable[curFun].push_back(SymbolTableElement());
+            auto symInd = st.symbolTable[curFun].size() - 1;
+            st.symbolTable[curFun][symInd].name = curTmpName;
+            st.symbolTable[curFun][symInd].type = resType;
+            st.symbolTable[curFun][symInd].cat = Category ::CONST;
             return 1;
         }
         relopTmp = addTmp;
@@ -623,6 +648,15 @@ int Parse::term() {
                 quadVec.emplace_back(multiopName, helper_factor, helper_term, curTmpName);
                 addTmp = curTmpName;
                 addType = helper_factor_type;
+
+
+                //符号表
+                Type resType = typeSwitch(helper_factor_type, helper_term_type);
+                st.symbolTable[curFun].push_back(SymbolTableElement());
+                auto symInd = st.symbolTable[curFun].size() - 1;
+                st.symbolTable[curFun][symInd].name = curTmpName;
+                st.symbolTable[curFun][symInd].type = resType;
+                st.symbolTable[curFun][symInd].cat = Category ::CONST;
                 return 1;
             } else {
                 cout << "缺少表达式" << endl;
@@ -664,7 +698,7 @@ int Parse::factor() {
                 multiType = expType;
                 return 1;
             } else {
-                cout << curIndex << " " << tokenVec[curIndex-1].name << endl;
+                //cout << curIndex << " " << tokenVec[curIndex-1].name << endl;
                 cout << "缺少)" << endl;
                 exit(0);
             }
@@ -839,6 +873,15 @@ bool Parse::typePriority(Type left, Type right) {
 
 bool Parse::isChar(Token &token) {
     return token.type == CHARCONST;
+}
+
+Type Parse::typeSwitch(Type left, Type right) {
+    if(left == Type::DOUBLE || right == Type::DOUBLE) {
+        return Type::DOUBLE;
+    }
+    if(left == Type::INT || right == Type::INT) {
+        return Type::INT;
+    }
 }
 
 

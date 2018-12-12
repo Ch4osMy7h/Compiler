@@ -70,8 +70,6 @@ Type SymbolTable::searchSymbolType(string name,int curFun) {
         }
     }
 
-
-
     //cout << name << " " << curFun << endl;
     cout << "该变量" << name << "未定义" << endl;
     exit(0);

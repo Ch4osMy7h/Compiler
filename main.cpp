@@ -39,15 +39,13 @@ int main(void) {
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
     parse.print();
-//    int index = 0;
-//    for (auto &i : symbolTable.symbolTable) {
-//        cout << index++  << ":" << endl;
-//        for (auto &j : i) {
-//            cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
-//            if(parse.toSymTypeName(j.type) == "arr") {
-//                cout << j.len << endl;
-//            }
-//        }
-//    }
+    int index = 0;
+    for (auto &i : symbolTable.symbolTable) {
+        cout << index++  << ":" << endl;
+        for (auto &j : i) {
+            if(j.name == "") cout << "find" << endl;
+            cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
+        }
+    }
     return 0;
 }
