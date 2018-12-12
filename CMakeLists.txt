@@ -18,7 +18,6 @@ add_executable(Compiler
         main.cpp
         MyUtils.h
         QuadTuple.h
-        README.md
         Scanner.cpp
         Scanner.h
         src.txt
@@ -28,4 +27,4 @@ add_executable(Compiler
         Token.cpp
         Token.h
         TypeTable.cpp
-        TypeTable.h)
+        TypeTable.h MyUtils.cpp)
