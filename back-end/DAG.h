@@ -1,3 +1,7 @@
+#include <utility>
+
+#include <utility>
+
 //
 // Created by thankod on 18-12-2.
 //
@@ -24,23 +28,20 @@ void test();
 struct DAGNode
 {
     int label;
-    string mainMark;//主标记，叶子节点时为值，非叶子节点时为运算符
+    string op;
+    string mainMark;
     vector<string> addMarks;
     int left;
     int right;
+    bool isDeleted;
     //用于构造叶结点的构造函数
     DAGNode(int label, string mainMark): label(label), mainMark(mainMark), left(-1),
-                                                    right(-1), addMarks() {};
+                                                    right(-1), addMarks(), isDeleted(false) {};
     //用于构造非叶节点的构造函数
-    DAGNode(int label, string mainMark, int left, int right): label(label), mainMark(mainMark), left(left),
-                                                    right(right), addMarks() {};
+    DAGNode(int label, string op, int left, int right): label(label), mainMark(""), op(op), left(left),
+                                                    right(right), addMarks(), isDeleted(false){};
     DAGNode() = default;
 
-};
-
-struct DAG
-{
-    
 };
 
 #endif //COMPILER_DAG_H

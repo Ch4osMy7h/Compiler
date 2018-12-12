@@ -37,15 +37,16 @@ void optimizate()
 
 }
 
-void optimizateOneBlock(BasicBlock& block)
+vector<DAGNode> optimizateOneBlock(BasicBlock block)
 {
     vector<DAGNode> nodes;
     map<string, int> defineMap;
-    //用来在nodes和defineMap里增加新的叶节点的functor
-    auto addLeafNode = [&](string op, string name) {
+    //用来在nodes和defineMap里增加新的叶节点的functor, 返回插入的元素的位置的迭代器
+    auto addLeafNode = [&](string name) {
         DAGNode tempNode(nodes.size(), name);
         defineMap[name] = nodes.size();
         nodes.push_back(tempNode);
+        return nodes.size() - 1;
     };
 
     //用来处理与四元式的res字段相关事宜的functor
@@ -72,12 +73,12 @@ void optimizateOneBlock(BasicBlock& block)
     };
 
     for(auto& qt: block.block) {
-        bool defineB = false;
-        bool defineC = false;
-        int n = 0;
-        if(defineMap.find(qt.name1) != defineMap.end()) {
-            addLeafNode(qt.op, qt.name1);
-            defineB = true;
+        int positionOfB = -1;
+        int positionOfC = -1;
+
+        int n = 0;//用来记录赋值语句赋值内容的位置
+        if(defineMap.find(qt.name1) == defineMap.end()) {
+            positionOfB = addLeafNode(qt.name1);
         }
         if(qt.op == "=") {
             //为赋值语句的时候
@@ -86,32 +87,34 @@ void optimizateOneBlock(BasicBlock& block)
         } else if (qt.op == "+" || qt.op == "-" || qt.op == "*" || qt.op == "/"
                 || qt.op == "<" || qt.op == ">" || qt.op == "==") {
             //如果是双目运算
-            if(defineMap.find(qt.name2) != defineMap.end()) {
+            if(defineMap.find(qt.name2) == defineMap.end()) {
                 //如果第二个操作数没定义过
-                addLeafNode(qt.op, qt.name2);
-                defineC = true;
+                positionOfC = addLeafNode(qt.name2);
             }
             if(isNum(nodes[defineMap[qt.name2]].mainMark) && isNum(nodes[defineMap[qt.name1]].mainMark)) {
                 //如果两个操作数对应的节点的主标记都是常数
-                if(defineC) {
-                    //如果C是处理此次四元式新生成的，则将其删除
-                    nodes.pop_back();
-                    defineMap.erase(qt.name2);
-                }
-                if(defineB) {
-                    nodes.pop_back();
-                    defineMap.erase(qt.name1);
-                }
-                string ans = calculateNum(qt.op, qt.name1, qt.name2);
-                if(defineMap.find(ans) != defineMap.end()) {
+                string ans = calculateNum(qt.op, nodes[defineMap[qt.name1]].mainMark, nodes[defineMap[qt.name2]].mainMark);
+                if(defineMap.find(ans) == defineMap.end()) {
                     //如果算出的ans没有定义过，就将它定义为一个叶子节点
-                    addLeafNode("", ans);//因为是叶节点，所以操作符为空
+                    n = addLeafNode(ans);
+                } else {
+                    n = defineMap[ans];
+                }
+                if(positionOfC != -1) {
+                    //如果C是处理此次四元式新生成的，则将其删除
+                    defineMap.erase(nodes[positionOfC].mainMark);
+                    nodes[positionOfC].isDeleted = true;
+                }
+                if(positionOfB != -1) {
+                    defineMap.erase(nodes[positionOfB].mainMark);
+                    nodes[positionOfB].isDeleted = true;
                 }
                 defineRes(qt.res, n);
             } else {
                 bool isDefined = false; //如果不是两个常数之间的运算，就要考虑这个运算的结果是否已经有了
                 for(auto node: nodes) {
-                    if(defineMap[qt.name1] == node.left && defineMap[qt.name2] == node.right & node.mainMark == qt.op) {
+                    if(defineMap[qt.name1] == node.left && defineMap[qt.name2] == node.right && node.op == qt.op
+                        && !node.isDeleted) {
                         n = node.label;
                         isDefined = true;
                         break;
@@ -127,28 +130,55 @@ void optimizateOneBlock(BasicBlock& block)
             }
         }
     }
+    return nodes;
+}
+
+vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
+{
+
+    auto isTemporary = [](string s) {return false;};//调试临时使用
+    vector<QuadTuple> ans;
+    for(auto node: nodes) {
+        if(node.isDeleted) {
+            continue;
+        }
+        if(node.left == -1 && node.right == -1) {
+            for(auto addMark: node.addMarks) {
+                if(!isTemporary(addMark)) {
+                    ans.push_back(QuadTuple("=", node.mainMark, " ", addMark));
+                }
+            }
+        } else {
+            ans.push_back(QuadTuple(node.op, nodes[node.left].mainMark.empty() ? nodes[node.left].addMarks[0] : nodes[node.left].mainMark,
+                                    nodes[node.right].mainMark.empty() ? nodes[node.right].addMarks[0] : nodes[node.right].mainMark,
+                                    node.addMarks[0]));
+            for(int i = 1; i < node.addMarks.size(); i++) {
+                ans.push_back(QuadTuple("=", node.addMarks[0], " ", node.addMarks[i]));
+            }
+        }
+    }
+    return ans;
 }
 
 void test()
 {
-    vector<QuadTuple> quadVec = {QuadTuple("=", "1", " ", "x"),
-                                 QuadTuple("LB", "a", " ", " "),
-                                 QuadTuple("*", "x", "5", "t1"),
-                                 QuadTuple("=", "t1", " ", "r"),
-                                 QuadTuple("<", "x", "10", "t2"),
-                                 QuadTuple("IF", "t2", " ", " "),
-                                 QuadTuple("+", "x", "1", "t3"),
-                                 QuadTuple("=", "t3", " ", "x"),
-                                 QuadTuple("GT", " ", " ", "a"),
-                                 QuadTuple("IE", "1", " ", "x"),
-                                 QuadTuple("=", "0", " ", "r"),
-                                 QuadTuple("ret", " ", " ", "0")};
+    vector<QuadTuple> quadVec = {QuadTuple("=", "3", " ", "t0"),
+                                 QuadTuple("*", "2", "t0", "t1"),
+                                 QuadTuple("+", "R", "r", "t2"),
+                                 QuadTuple("*", "t1", "t2", "A"),
+                                 QuadTuple("=", "A", " ", "B"),
+                                 QuadTuple("*", "2", "t0", "t3"),
+                                 QuadTuple("+", "R", "r", "t4"),
+                                 QuadTuple("*", "t3", "t4", "t5"),
+                                 QuadTuple("-", "R", "r", "t6"),
+                                 QuadTuple("*", "t5", "t6", "B")};
     auto a = generateBlocks(quadVec);
     cout << a.size() << endl;
     for(auto s: a) {
-        for(auto q: s.block) {
-            q.print();
+        auto temp = DAGToQuadTuple(optimizateOneBlock(s));
+        for(auto qt :temp) {
+            qt.print();
         }
-        cout << endl;
+
     }
 }
