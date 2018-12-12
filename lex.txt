@@ -37,8 +37,9 @@
          *  delimter        36
          v identifer        12
          )  delimter         7
+         ;  delimter        12
          }  delimter        11
-       int   keyword         3
+    double   keyword         6
        add identifer        13
          (  delimter         6
        int   keyword         3
@@ -62,96 +63,113 @@
          ;  delimter        12
          }  delimter        11
        int   keyword         3
-      main identifer        21
+         a identifer        21
+         ;  delimter        12
+       int   keyword         3
+      main identifer        22
          (  delimter         6
          )  delimter         7
          {  delimter        10
-       int   keyword         3
-         a identifer        22
-         ;  delimter        12
-       int   keyword         3
+    double   keyword         6
          b identifer        23
          ;  delimter        12
        int   keyword         3
-         x identifer        24
+         a identifer        24
+         ;  delimter        12
+      char   keyword         7
+         d identifer        25
          ;  delimter        12
        int   keyword         3
-         y identifer        25
+         x identifer        26
          ;  delimter        12
        int   keyword         3
-         s identifer        26
+         y identifer        27
+         ;  delimter        12
+       int   keyword         3
+         t identifer        28
+         ;  delimter        12
+       int   keyword         3
+         s identifer        29
          [  delimter         8
         10       int         2
          ]  delimter         9
          ;  delimter        12
-         a identifer        27
+         a identifer        30
          =  delimter        19
-         1       int         3
-         ;  delimter        12
-         b identifer        28
+         b identifer        31
          =  delimter        19
-         2       int         4
+         4       int         3
          ;  delimter        12
-         x identifer        29
+         x identifer        32
          =  delimter        19
-         5       int         5
+         5       int         4
          ;  delimter        12
-         y identifer        30
+         y identifer        33
          =  delimter        19
-        10       int         6
+        10       int         5
          ;  delimter        12
-       gcd identifer        31
+         t identifer        34
+         =  delimter        19
+         5       int         6
+         ;  delimter        12
+         d identifer        35
+         =  delimter        19
+       'a'      char         1
+         ;  delimter        12
+       gcd identifer        36
          (  delimter         6
-         a identifer        32
+         a identifer        37
          ,  delimter         4
-         b identifer        33
+         b identifer        38
          )  delimter         7
          ;  delimter        12
-       add identifer        34
+       add identifer        39
          (  delimter         6
-         x identifer        35
+         x identifer        40
          ,  delimter         4
-         y identifer        36
+         y identifer        41
          )  delimter         7
          ;  delimter        12
         if   keyword        20
          (  delimter         6
-         a identifer        37
+         a identifer        42
          >  delimter         0
-         b identifer        38
+         b identifer        43
          )  delimter         7
-         a identifer        39
+         a identifer        44
          =  delimter        19
-         b identifer        40
+         b identifer        45
          +  delimter         1
          1       int         7
+         *  delimter        36
+         a identifer        46
          ;  delimter        12
       else   keyword        21
-         b identifer        41
+         b identifer        47
          =  delimter        19
-         a identifer        42
+         a identifer        48
          +  delimter         1
          1       int         8
          ;  delimter        12
      while   keyword        26
          (  delimter         6
-         x identifer        43
+         x identifer        49
          <  delimter        17
         10       int         9
          )  delimter         7
          {  delimter        10
-         x identifer        44
+         x identifer        50
          =  delimter        19
-         x identifer        45
+         x identifer        51
          +  delimter         1
          1       int        10
          ;  delimter        12
-         s identifer        46
+         s identifer        52
          [  delimter         8
          2       int        11
          ]  delimter         9
          =  delimter        19
-         s identifer        47
+         s identifer        53
          [  delimter         8
          3       int        12
          ]  delimter         9
@@ -163,3 +181,73 @@
          0       int        14
          ;  delimter        12
          }  delimter        11
+  vardef       c     int      --
+  fundef     gcd     int       2
+ paradef     int       u      __
+ paradef     int       v      __
+      if      __      __      __
+      ==       v       0      t0
+ ifbegin      t0      __      __
+  return       u      __      __
+    else      __      __      __
+ funcall     gcd      __      __
+       /       u       v      t1
+       *      t1       v      t2
+       -       u      t2      t3
+ paramin       v      __      __
+ paramin      t3      __      __
+ callend      __      __      __
+  return              __      __
+   ifend      __      __      __
+  funend      __      __      __
+  fundef     add  double       2
+ paradef     int       x      __
+ paradef     int       y      __
+  vardef       z     int      --
+       +       x       y      t4
+       =      t4      __       z
+  return       z      __      __
+  funend      __      __      __
+  vardef       a     int      --
+  fundef    main     int       0
+  vardef       b  double      --
+  vardef       a     int      --
+  vardef       d    char      --
+  vardef       x     int      --
+  vardef       y     int      --
+  vardef       t     int      --
+  vardef       s     arr      __
+       =       4      __       b
+       =       b      __       a
+       =       5      __       x
+       =      10      __       y
+       =       5      __       t
+       =     'a'      __       d
+ funcall     gcd      __      __
+ paramin       a      __      __
+ paramin       b      __      __
+ callend      __      __      __
+ funcall     add      __      __
+ paramin       x      __      __
+ paramin       y      __      __
+ callend      __      __      __
+      if      __      __      __
+       >       a       b      t5
+ ifbegin      t5      __      __
+       *       1       a      t6
+       +       b      t6      t7
+       =      t7      __       a
+    else      __      __      __
+       +       a       1      t8
+       =      t8      __       b
+   ifend      __      __      __
+   while      __      __      __
+       <       x      10      t9
+      do      t9      __      __
+       +       x       1     t10
+       =     t10      __       x
+       +    s[3]       1     t11
+       =     t11      __    s[2]
+whileend      __      __      __
+  return       0      __      __
+  funend      __      __      __

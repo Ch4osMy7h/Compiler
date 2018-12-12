@@ -21,7 +21,7 @@ KeyWordTable::KeyWordTable() {
                                "const" , "unsigned" , "signed" , "extern" , "register" , "static" ,
                                "volatile" , "void" , "if" , "else" , "switch" , "case" , "for" ,
                                "do" , "while" , "goto" , "continue" , "break" , "default" ,
-                               "sizeof" , "return" , "bool" , "cout", "use", "func"};
+                               "sizeof" , "return" , "bool" , "cout", "use", "func", "string"};
     for(auto c : keyWord) {
         tokenTable.push_back(c);
         index[c] = static_cast<int>(tokenTable.size());

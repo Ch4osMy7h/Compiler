@@ -14,7 +14,8 @@ enum Type {
     DOUBLE = 2,
     CHAR = 3,
     BOOL = 4,
-    ARRAY = 5
+    ARRAY = 5,
+    STRING = 6
 };
 
 struct ArrayInfo {
@@ -81,7 +82,8 @@ public:
     vector<vector<SymbolTableElement>> symbolTable; //符号表总表
     vector<FunctionTable> functionTableVec;
     vector<ArrayInfo> arrayTableVec;
-    int searchSymbolName(string name);
+    int searchSymbolName(string name, int curInd);
+    Type searchSymbolType(string name,int curFun);
     friend bool operator<(const SymbolTableElement& ls, SymbolTableElement& rs);
     void print();
     SymbolTable() {

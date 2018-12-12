@@ -1,29 +1,32 @@
 int c;
+/*int c;*/
 int gcd(int u,int v){
     if (v==0) return u;
     else return gcd(v,u-(u/v)*v);
 }
-int add(int x,int y){
+double add(int x,int y){
     int z;
     z=x+y;
     return z;
 }
+int a;
 int main(){
+   double b;
    int a;
-   int b;
-   int a;
+   char d;
    int x;
    int y;
+   int t;
    int s[10];
-   a=1;
-   b=2;
+   a=b=4;
    x=5;
    y=10;
    t=5;
+   d='a';
    /*a-12345*/
    gcd(a,b);
    add(x,y);
-   if (a>b) a=b+1;
+   if (a>b) a=b+1*a;
    else b=a+1;
    while (x<10){
       x=x+1;

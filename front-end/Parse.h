@@ -56,6 +56,11 @@ private:
     string relopTmp; Type relopType;
     string addTmp;  Type addType;
     string multiTmp; Type multiType;
+    string callTmp; Type callType;
+
+
+
+
     string relopName;
     string addopName;
     string multiopName;
@@ -106,6 +111,10 @@ public:
     Type toType(string basic_string);
 
     void print();
+
+    bool typePriority(Type left, Type right);
+
+    bool isChar(Token &token);
 };
 
 

@@ -4,6 +4,7 @@
 
 #include "Scanner.h"
 #include "front-end/Parse.h"
+#include "SymbolTable.h"
 using namespace std;
 
 int main(void) {
@@ -22,8 +23,9 @@ int main(void) {
     vector<QuadTuple> quadVec;
     Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
     sc.scan("src.txt");
-    //sc.showLex();
-    //cout << tokenVec.size() << endl;
+//    sc.showLex();
+//    fclose(stdout);
+//    cout << tokenVec.size() << endl;
     //symbolTable.print();
     /*
     Parse::Parse(vector<QuadTurple> &quadVec, vector<Token> &tokenVec, SymbolTable &st, KeyWordTable &kt,
@@ -37,5 +39,15 @@ int main(void) {
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
     parse.print();
+//    int index = 0;
+//    for (auto &i : symbolTable.symbolTable) {
+//        cout << index++  << ":" << endl;
+//        for (auto &j : i) {
+//            cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
+//            if(parse.toSymTypeName(j.type) == "arr") {
+//                cout << j.len << endl;
+//            }
+//        }
+//    }
     return 0;
 }

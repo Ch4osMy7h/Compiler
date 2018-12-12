@@ -50,7 +50,7 @@ void Automatic::init() {
     fillNum(8, 7);
     fillDelimter(8, 0);
     //state 9
-    fillChars(9, 10);
+    fillAll(9, 10);
     // state 10
     fillState(10, '\'', 16);
     // state 11
