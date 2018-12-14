@@ -19,7 +19,7 @@ int main(){
    int t;
    int s[10];
    a=b=4;
-   x=5;
+   x=5+7*3;
    y=10;
    t=5;
    d='a';

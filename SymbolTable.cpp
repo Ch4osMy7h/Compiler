@@ -75,11 +75,42 @@ Type SymbolTable::searchSymbolType(string name,int curFun) {
     exit(0);
 }
 
-bool SymbolTable::isTempName(string name, int curFun) {
-    for(int i = 0; i < symbolTable[curFun].size(); i++) {
-        if(symbolTable[curFun][i].name == name && symbolTable[curFun][i].isTemp) {
+
+
+bool SymbolTable::isTempName(string name, string curFun) {
+    for(int i = 0; i < symbolTable[string2num<int>(curFun)].size(); i++) {
+        if(symbolTable[string2num<int>(curFun)][i].name == name && symbolTable[string2num<int>(curFun)][i].isTemp) {
             return true;
         }
     }
+    cout << "未找到该变量" << endl;
     return false;
+}
+
+bool SymbolTable::isActive(string name, string curFun) {
+    for(int i = 0; i < symbolTable[string2num<int>(curFun)].size(); i++) {
+        if(symbolTable[string2num<int>(curFun)][i].name == name) {
+            return symbolTable[string2num<int>(curFun)][i].isActive;
+        }
+    }
+    cout << "未找到该变量" << endl;
+    return false;
+}
+
+void SymbolTable::setActive(string name, string curFun) {
+    for(int i = 0; i < symbolTable[string2num<int>(curFun)].size(); i++) {
+        if(symbolTable[string2num<int>(curFun)][i].name == name) {
+            symbolTable[string2num<int>(curFun)][i].isActive = true;
+        }
+    }
+    cout << "未找到该变量" << endl;
+}
+
+void SymbolTable::setUnactive(string name, string curFun) {
+    for(int i = 0; i < symbolTable[string2num<int>(curFun)].size(); i++) {
+        if(symbolTable[string2num<int>(curFun)][i].name == name) {
+            symbolTable[string2num<int>(curFun)][i].isActive = false;
+        }
+    }
+    cout << "未找到该变量" << endl;
 }

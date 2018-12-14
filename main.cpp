@@ -39,7 +39,7 @@ int main(void) {
     */
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
-//    parse.print();
+    parse.print();
 //    int index = 0;
 //    for (auto &i : symbolTable.symbolTable) {
 //        cout << index++  << ":" << endl;

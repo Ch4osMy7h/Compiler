@@ -6,6 +6,7 @@
 #define COMPILER_SYMBOLTABLE_H
 
 #include "Table.h"
+#include "MyUtils.h"
 
 using namespace std;
 
@@ -71,7 +72,7 @@ struct SymbolTableElement {
     int pfinalind; //如果是函数就给他分配函数表
     double constNum; //if这是个const
     bool isTemp; //临时变量
-
+    bool isActive; //是否活跃；
 };
 
 
@@ -89,7 +90,13 @@ public:
     Type searchSymbolType(string name,int curFun);
     friend bool operator<(const SymbolTableElement& ls, SymbolTableElement& rs);
     void print();
-    bool isTempName(string name, int curFun); //判断是否是临时变量
+    bool isTempName(string name, string curFun); //判断是否是临时变量
+    bool isActive(string name,string curFun); //判断是否活跃
+    void setActive(string name, string curFun); //设置为活跃
+    void setUnactive(string name, string curFun; //设置为非活跃
+
+
+
     SymbolTable() {
         //全局符号表初始化
         vector<SymbolTableElement> allScopeVar;
