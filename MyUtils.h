@@ -14,7 +14,7 @@ T string2num(string str) {
     is >> num;
     return num;
 }
-
 bool isNum(string str);
+bool isOperator(string str);
 string calculateNum(string op, string a, string b);
 #endif //COMPILER_MYUTILS_H

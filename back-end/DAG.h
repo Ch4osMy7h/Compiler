@@ -1,7 +1,3 @@
-#include <utility>
-
-#include <utility>
-
 //
 // Created by thankod on 18-12-2.
 //
@@ -12,16 +8,10 @@
 #include <vector>
 #include <set>
 #include "../QuadTuple.h"
+#include "BasicBlock.h"
+#include <fstream>
 using namespace std;
 
-struct BasicBlock
-{
-    vector<QuadTuple> block;
-    BasicBlock(vector<QuadTuple>& v, int begin, int end): block(v.begin() + begin , v.begin() + end) {};
-    BasicBlock() = default;
-};
-
-vector<BasicBlock> generateBlocks(vector<QuadTuple>& ov);
 
 void test();
 

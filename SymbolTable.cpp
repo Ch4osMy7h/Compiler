@@ -97,19 +97,10 @@ bool SymbolTable::isActive(string name, string curFun) {
     return false;
 }
 
-void SymbolTable::setActive(string name, string curFun) {
+void SymbolTable::setActive(string name, string curFun, bool active) {
     for(int i = 0; i < symbolTable[string2num<int>(curFun)].size(); i++) {
         if(symbolTable[string2num<int>(curFun)][i].name == name) {
-            symbolTable[string2num<int>(curFun)][i].isActive = true;
-        }
-    }
-    cout << "未找到该变量" << endl;
-}
-
-void SymbolTable::setUnactive(string name, string curFun) {
-    for(int i = 0; i < symbolTable[string2num<int>(curFun)].size(); i++) {
-        if(symbolTable[string2num<int>(curFun)][i].name == name) {
-            symbolTable[string2num<int>(curFun)][i].isActive = false;
+            symbolTable[string2num<int>(curFun)][i].isActive = active;
         }
     }
     cout << "未找到该变量" << endl;

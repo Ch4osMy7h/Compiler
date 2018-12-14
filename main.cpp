@@ -37,7 +37,7 @@ int main(void) {
         this->funCnt = 0;
     }
     */
-    Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
+    /*Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
     parse.print();
     int index = 0;
@@ -47,7 +47,7 @@ int main(void) {
 //            if(j.name == "a") cout << j.type << endl;
             cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
         }
-    }
-//    test();
+    }*/
+    test();
     return 0;
 }

@@ -27,4 +27,4 @@ add_executable(Compiler
         Token.cpp
         Token.h
         TypeTable.cpp
-        TypeTable.h MyUtils.cpp)
+        TypeTable.h MyUtils.cpp back-end/BasicBlock.cpp back-end/BasicBlock.h back-end/Assembly.cpp back-end/Assembly.h)

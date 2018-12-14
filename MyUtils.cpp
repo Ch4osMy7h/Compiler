@@ -26,3 +26,10 @@ string calculateNum(string op, string a, string b)
         return to_string(string2num<int>(a) == string2num<int>(b));
     }
 }
+
+bool isOperator(string str)
+{
+    return str == "+" || str == "-" || str == "*" || str == "/" ||
+            str == "<" || str == ">" || str == "==" || str == "=";
+
+}

@@ -4,41 +4,38 @@
 
 #include "DAG.h"
 #include "../MyUtils.h"
+#include "BasicBlock.h"
 
-vector<BasicBlock> generateBlocks(vector<QuadTuple>& ov)
+
+vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
 {
-    set<int> leaders;
-    vector<BasicBlock> blocks;
-    for(int i = 1; i < ov.size(); i++) {
-        if(ov[i].op == "JMP" || ov[i].op == "ifbegin" || ov[i].op == "while"
-            || ov[i].op == "WE" || ov[i].op == "else") {
-            //紧跟在转向语句后面的语句是入口语句
-            leaders.insert(i + 1);
-        } else if(ov[i].op == "LB" || ov[i].op == "ifend" || ov[i].op == "else" || ov[i].op == "while"
-            || ov[i].op == "whileend") {
-            //转向语句的目标是入口语句
-            leaders.insert(i);
-        } else if(ov[i].op == "fundef" || ov[i].op == "funcall" || ov[i].op == "callend" || ov[i].op == "funend") {
-            leaders.insert(i);
-        } else if(ov[i].op == "return") {
-            leaders.insert(i + 1);
+
+    auto isTemporary = [](string s) {return false;};//调试临时使用
+    auto getValue = [&](int pos) {
+        return nodes[pos].mainMark.empty() ? nodes[pos].addMarks[0] : nodes[pos].mainMark;
+    };
+    vector<QuadTuple> ans;
+    for(auto node: nodes) {
+        if(node.isDeleted) {
+            continue;
+        }
+        if(node.left == -1 && node.right == -1) {
+            for(auto addMark: node.addMarks) {
+                if(!isTemporary(addMark)) {
+                    ans.push_back(QuadTuple("=", node.mainMark, " ", addMark));
+                }
+            }
+        } else {
+            ans.push_back(QuadTuple(node.op, getValue(node.left), getValue(node.right), node.addMarks[0]));
+            for(int i = 1; i < node.addMarks.size(); i++) {
+                ans.push_back(QuadTuple("=", node.addMarks[0], " ", node.addMarks[i]));
+            }
         }
     }
-    int start = 0;
-    for(auto end: leaders) {
-        blocks.push_back(BasicBlock(ov, start, end));
-        start = end;
-    }
-    blocks.push_back(BasicBlock(ov, start, ov.size()));
-    return blocks;
+    return ans;
 }
 
-void optimizate(vector<BasicBlock> blocks)
-{
-
-}
-
-vector<DAGNode> optimizateOneBlock(BasicBlock block)
+vector<DAGNode> optimizeOneBlock(vector<QuadTuple> quadVector)
 {
     vector<DAGNode> nodes;
     map<string, int> defineMap;
@@ -73,7 +70,7 @@ vector<DAGNode> optimizateOneBlock(BasicBlock block)
         }
     };
 
-    for(auto& qt: block.block) {
+    for(auto& qt: quadVector) {
         int positionOfB = -1;
         int positionOfC = -1;
 
@@ -86,7 +83,7 @@ vector<DAGNode> optimizateOneBlock(BasicBlock block)
             n = defineMap[qt.name1];
             defineRes(qt.res, n);
         } else if (qt.op == "+" || qt.op == "-" || qt.op == "*" || qt.op == "/"
-                || qt.op == "<" || qt.op == ">" || qt.op == "==") {
+                   || qt.op == "<" || qt.op == ">" || qt.op == "==") {
             //如果是双目运算
             if(defineMap.find(qt.name2) == defineMap.end()) {
                 //如果第二个操作数没定义过
@@ -95,7 +92,7 @@ vector<DAGNode> optimizateOneBlock(BasicBlock block)
             if(isNum(nodes[defineMap[qt.name2]].mainMark) && isNum(nodes[defineMap[qt.name1]].mainMark)) {
                 //如果两个操作数对应的节点的主标记都是常数
                 string ans = calculateNum(qt.op, nodes[defineMap[qt.name1]].mainMark,
-                        nodes[defineMap[qt.name2]].mainMark);
+                                          nodes[defineMap[qt.name2]].mainMark);
                 if(defineMap.find(ans) == defineMap.end()) {
                     //如果算出的ans没有定义过，就将它定义为一个叶子节点
                     n = addLeafNode(ans);
@@ -116,7 +113,7 @@ vector<DAGNode> optimizateOneBlock(BasicBlock block)
                 bool isDefined = false; //如果不是两个常数之间的运算，就要考虑这个运算的结果是否已经有了
                 for(auto node: nodes) {
                     if(defineMap[qt.name1] == node.left && defineMap[qt.name2] == node.right && node.op == qt.op
-                        && !node.isDeleted) {
+                       && !node.isDeleted) {
                         n = node.label;
                         isDefined = true;
                         break;
@@ -135,33 +132,24 @@ vector<DAGNode> optimizateOneBlock(BasicBlock block)
     return nodes;
 }
 
-vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
+void optimize(vector<BasicBlock>& blocks)
 {
-
-    auto isTemporary = [](string s) {return false;};//调试临时使用
-    auto getValue = [&](int pos) {
-        return nodes[pos].mainMark.empty() ? nodes[pos].addMarks[0] : nodes[pos].mainMark;
+    auto connect = [](vector<QuadTuple> a, vector<QuadTuple> b, vector<QuadTuple> c) {
+        a.insert(a.end(), b.begin(), b.end());
+        a.insert(a.end(), c.begin(), c.end());
+        return a;
     };
-    vector<QuadTuple> ans;
-    for(auto node: nodes) {
-        if(node.isDeleted) {
+
+    for(auto& block: blocks) {
+        if(block.start == -1 || block.finish == -1) {
             continue;
         }
-        if(node.left == -1 && node.right == -1) {
-            for(auto addMark: node.addMarks) {
-                if(!isTemporary(addMark)) {
-                    ans.push_back(QuadTuple("=", node.mainMark, " ", addMark));
-                }
-            }
-        } else {
-            ans.push_back(QuadTuple(node.op, getValue(node.left), getValue(node.right), node.addMarks[0]));
-            for(int i = 1; i < node.addMarks.size(); i++) {
-                ans.push_back(QuadTuple("=", node.addMarks[0], " ", node.addMarks[i]));
-            }
-        }
+        block.block = connect(block.exprVectorBefore(), DAGToQuadTuple(optimizeOneBlock(block.exprVector())),
+                block.exprVectorAfter());
     }
-    return ans;
 }
+
+
 
 void test()
 {
@@ -175,12 +163,32 @@ void test()
                                  QuadTuple("*", "t3", "t4", "t5"),
                                  QuadTuple("-", "R", "r", "t6"),
                                  QuadTuple("*", "t5", "t6", "B")};
-    auto a = generateBlocks(quadVec);
-    cout << a.size() << endl;
-    for(auto s: a) {
-        auto temp = DAGToQuadTuple(optimizateOneBlock(s));
-        for(auto qt :temp) {
+    quadVec.clear();
+    ifstream in("1.txt");
+    string a, b, c, d;
+    while(in >> a) {
+        in >> b >> c >> d;
+        quadVec.push_back(QuadTuple(a, b, c, d));
+    }
+    auto blocks = generateBlocks(quadVec);
+    //optimize(blocks);
+    cout << blocks.size() << endl;
+    int i = 0;
+    for(auto block: blocks) {
+        cout << "第" << i++ << "个基本块:" << endl;
+        cout << "所属函数名：" << block.curFun << endl;
+        cout << "开始：" << block.start << " 结束：" << block.finish <<endl;
+
+
+        for(auto qt: block.block) {
             qt.print();
         }
     }
+    /*
+    for(auto s: a) {
+        auto temp = DAGToQuadTuple(optimizateOneBlock(s.block));
+        for(auto qt :temp) {
+            qt.print();
+        }
+    }*/
 }
