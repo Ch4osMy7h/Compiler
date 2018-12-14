@@ -11,7 +11,7 @@ double add(int x,int y){
 }
 int a;
 int main(){
-   double b;
+   int b;
    int a;
    char d;
    int x;
@@ -23,11 +23,11 @@ int main(){
    y=10;
    t=5;
    d='a';
-   /*a-12345*/
+
    gcd(a,b);
    add(x,y);
    if (a>b) a=b+1*a;
-   else b=a+1;
+   else b=t;
    while (x<10){
       x=x+1;
       s[2]=s[3]+1;

@@ -74,3 +74,12 @@ Type SymbolTable::searchSymbolType(string name,int curFun) {
     cout << "该变量" << name << "未定义" << endl;
     exit(0);
 }
+
+bool SymbolTable::isTempName(string name, int curFun) {
+    for(int i = 0; i < symbolTable[curFun].size(); i++) {
+        if(symbolTable[curFun][i].name == name && symbolTable[curFun][i].isTemp) {
+            return true;
+        }
+    }
+    return false;
+}

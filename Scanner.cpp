@@ -14,7 +14,7 @@ void Scanner::scan(string filename) {
     string buffer = ""; //识别到的串
     FILE* fp;
     Automatic at; //初始化自动机
-    int comment_cnt = 0;
+    //int comment_cnt = 0;
     //暂时取消
     if( (fp = fopen("../src.txt", "r")) == NULL) {
         cout << "open Error" << endl;
@@ -36,6 +36,7 @@ void Scanner::scan(string filename) {
         //跳过空格 换行符 \t 以及回车
         if(curChar == '\n' || curChar == '\t' || curChar == ' ' || curChar == '\r') {
             tokenGenerate(state, buffer);
+            if(curChar == '\n') CurLine++;
             pos = 0;
             buffer = "";
             state = 1;
@@ -68,12 +69,14 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
             token.id = keyWordTable.getID(buffer);
             token.name = buffer;
             token.type = KEYWORD;
+            token.line = CurLine;
             tokenVec.push_back(token);
         } else {
             identiferTable.addElement(buffer);
             token.id = identiferTable.getID(buffer);
             token.name = buffer;
             token.type = IDENTIFIER;
+            token.line = CurLine;
             tokenVec.push_back(token);
             //symbolTable.entry(buffer, -1, Catgory::None, -1);
         }
@@ -83,29 +86,37 @@ void Scanner::tokenGenerate(int state_before, string buffer) {
         token.id = intTable.getID(num);
         token.name = buffer;
         token.type = INTCONST;
+        token.line = CurLine;
         tokenVec.push_back(token);
+//        token.line = CurLine;
     } else if(code == "float") {
         auto num = string2num<double >(buffer);
         token.id = floatTable.getID(num);
         token.name = buffer;
         token.type = FLOATCONST;
+        token.line = CurLine;
         tokenVec.push_back(token);
     } else if(code == "char") {
         charTable.addElement(buffer[0]);
         token.id = charTable.getID(buffer[0]);
         token.name = buffer;
         token.type = CHARCONST;
+        token.line = CurLine;
         tokenVec.push_back(token);
+        token.line = CurLine;
     } else if(code == "string") {
         stringTable.addElement(buffer);
         token.id = stringTable.getID(buffer);
         token.name = buffer;
         token.type = STRCONST;
+        token.line = CurLine;
         tokenVec.push_back(token);
+        token.line = CurLine;
     } else if(code == "p") {
         token.id = delimiterTable.getID(buffer);
         token.name = buffer;
         token.type = DELIMTER;
+        token.line = CurLine;
         tokenVec.push_back(token);
     }
 }
@@ -152,7 +163,7 @@ void Scanner::showLex() {
     freopen("../lex.txt", "w", stdout);
     cout << "\t\t词法分析结果\t\t" << endl;
     for(auto val : tokenVec) {
-        cout << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id << endl;
+        cout << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id << "   line: " << val.line << endl;
     }
 }
 

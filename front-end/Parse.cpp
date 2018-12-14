@@ -68,7 +68,7 @@ int Parse::varDeclaration() {
     int index = curIndex;
     if(typeSpecifier()) {
         if(tokenVec[curIndex].type != TokenType::IDENTIFIER) {
-            cout << "Error occured when missing variable name or function name" << endl;
+            cout << "类型声明后必须跟着标识符在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
         string curName = tokenVec[curIndex].name;
@@ -76,7 +76,7 @@ int Parse::varDeclaration() {
         stIndex = st.searchSymbolName(tokenVec[curIndex].name, curFun);
         if(stIndex >= 0) {
 //            cout << tokenVec[curIndex].name << endl;
-            cout << "变量"<<  tokenVec[curIndex].name <<"重定义" << endl;
+            cout << "变量"<<  tokenVec[curIndex].name <<"重定义" << "在第" << tokenVec[curIndex].line  << "行" << endl;
            exit(0);
         }
 
@@ -97,13 +97,13 @@ int Parse::varDeclaration() {
                 arrLen = string2num<int >(tokenVec[curIndex].name);
                 curIndex++;
             } else {
-                cout << "error array size" << endl;
+                cout << "数组长度必须是整型变量在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
             if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"] == tokenVec[curIndex].id) {
                 curIndex++;
             } else {
-                cout << "miss an ] flag when defina an array" << endl;
+                cout << "数组声明缺少右括号在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
             arrayFlag = true;
@@ -111,7 +111,7 @@ int Parse::varDeclaration() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
-            cout << "变量声明缺少；语句" << endl;
+            cout << "变量声明缺少;" << tokenVec[curIndex].line - 1 << "行" << endl;
         }
         if(arrayFlag) {
             quadVec.emplace_back("vardef", curName, "arr", "__");
@@ -157,11 +157,13 @@ int Parse::funDeclaration() {
     if(typeSpecifier()) {
         string curName;
         string tmpType = curType;
+        int line = 0;
         if(tokenVec[curIndex].type == IDENTIFIER) {
             curName = tokenVec[curIndex].name;
+            line = tokenVec[curIndex].line;
             curIndex++;
         } else {
-            cout << "Error occured when missing variable name or function name" << endl;
+            cout << "类型声明后必须跟着标识符在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
@@ -175,7 +177,7 @@ int Parse::funDeclaration() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
-            cout << "函数定义缺少右括号" << endl;
+            cout << "函数定义缺少右括号在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
         //函数开始四元式生成
@@ -226,7 +228,7 @@ int Parse::funDeclaration() {
             curFun = 0;
             return 1;
         } else {
-            cout << "函数定义错误" << endl;
+            cout << "函数" << curName  << "定义错误在第" << line << "行" << endl;
         }
     }
     return 0;
@@ -251,7 +253,7 @@ int Parse::paramList() {
     if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id) {
         curIndex++;
         if(!paramList()) {
-            cout << "Error occured when need a param after\",\"" << endl;
+            cout << "在" << tokenVec[index].line << "行缺少形式参数声明" << endl;
             exit(0);
         }
     }
@@ -267,7 +269,7 @@ int Parse::param() {
             curName = tokenVec[curIndex].name;
             curIndex++;
         } else {
-            cout << "Error occured when need an identifer after type" << endl;
+            cout << "类型声明后必须跟着标识符在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["["] == tokenVec[curIndex].id) {
@@ -276,7 +278,7 @@ int Parse::param() {
                 curIndex++;
                 arrayFlag = true;
             } else {
-                cout << "Error occured when missing \"]\" char" << endl;
+                cout << "数组声明缺少右括号在第"<< tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
         }
@@ -302,7 +304,7 @@ int Parse::compoundStmt() {
             curIndex++;
         } else {
             //cout << tokenVec[curIndex].name << endl;
-            cout << "Error occured when missing \"}\" char" << endl;
+            cout << "函数定义缺少右括号在第" << tokenVec[curIndex].line- 1  << "行" << endl;
             exit(0);
         }
         return 1;
@@ -351,7 +353,7 @@ int Parse::expressionStmt() {
             curIndex++;
             return 1;
         } else {
-            cout << "Errored when missing ; char" << endl;
+            cout << "表达式语句缺少;在第" << tokenVec[curIndex].line - 1 << "行"<< endl;
             exit(0);
         }
     }
@@ -366,16 +368,17 @@ int Parse::expressionStmt() {
 int Parse::selectionStmt() {
     if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["if"] == tokenVec[curIndex].id) {
         curIndex++;
+        int line = tokenVec[curIndex].line;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
             curIndex++;
             quadVec.emplace_back(QuadTuple("if", "__", "__", "__"));
         } else {
-            cout << "if语句缺少左括号" << endl;
+            cout << "if语句缺少左括号在第" << tokenVec[curIndex].line  << "行" << endl;
             exit(0);
         }
         if(!expression()) {
             cout << tokenVec[curIndex].name << endl;
-            cout << "if语句表达式错误 " << endl;
+            cout << "if语句表达式错误在第" << tokenVec[curIndex].line  << "行" << endl;
             exit(0);
         }
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
@@ -383,20 +386,21 @@ int Parse::selectionStmt() {
         } else {
             cout << curIndex << endl;
             cout << tokenVec[curIndex].name  << endl;
-            cout << "if语句缺少右括号" << endl;
+            cout << "if语句缺少右括号在第" << tokenVec[curIndex].line  << "行" << endl;
             exit(0);
         }
         quadVec.emplace_back(QuadTuple("ifbegin", curTmpName, "__", "__"));
         //sem.pop();
         if(!statement()) {
-            cout << "statement语句表达式错误" << endl;
+            cout << "statement语句表达式错误在第" << tokenVec[curIndex].line  << "行" << endl;
             exit(0);
         }
         if (tokenVec[curIndex].type == KEYWORD && keyWordTable.index["else"] == tokenVec[curIndex].id) {
             quadVec.emplace_back(QuadTuple("else", "__", "__", "__"));
             curIndex++;
+            int elseLine = tokenVec[curIndex].line;
             if(!statement()) {
-                cout << "else 语句表达式错误" << endl;
+                cout << "else 语句表达式错误在第"  << elseLine << "行" << endl;
                 exit(0);
             }
         }
@@ -413,7 +417,7 @@ int Parse::iterationStmt() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
-            cout << "while缺少左括号"<< endl;
+            cout << "while缺少左括号在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
         if(!expression()) {
@@ -425,7 +429,7 @@ int Parse::iterationStmt() {
             quadVec.emplace_back("do", curTmpName, "__", "__");
             //sem.pop();
         } else {
-            cout <<"while缺少右括号" << endl;
+            cout <<"while缺少右括号在第" << tokenVec[curIndex].line << "行"<< endl;
             exit(0);
         }
         if(!statement()) {
@@ -450,7 +454,7 @@ int Parse::returnStmt() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
-            cout<<"return 语句缺少';'!" << endl;
+            cout<<"return 语句缺少';'在第" << tokenVec[curIndex].line -1 << "行" << endl;
             exit(0);
         }
         return 1;
@@ -486,7 +490,7 @@ int Parse::expression() {
                     exit(0);
                 }
             } else {
-                cout << "表达式错误" << endl;
+                cout << "表达式错误在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
 
@@ -524,7 +528,7 @@ int Parse::var() {
                 varName = helper + "[" + expName + "]";
                 curIndex++;
             } else {
-                cout << "数组缺少]" << endl;
+                cout << "数组缺少]在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
             return 1;
@@ -556,6 +560,7 @@ int Parse::simpleExpression() {
                 st.symbolTable[curFun][symInd].name = curTmpName;
                 st.symbolTable[curFun][symInd].type = Type::BOOL;
                 st.symbolTable[curFun][symInd].cat = Category ::CONST;
+                st.symbolTable[curFun][symInd].isTemp = true;
                 expName = curTmpName;
             } else {
                 cout << "表达式错误" << endl;
@@ -587,7 +592,7 @@ int Parse::additiveExpression() {
         helper_Type = addType;
         if(addop()) {
             if(!term()) {
-                cout << "addop后面缺少表达式" << endl;
+                cout << "addop后面缺少表达式在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
             if(!typePriority(helper_Type, addType) ) {
@@ -611,6 +616,7 @@ int Parse::additiveExpression() {
             st.symbolTable[curFun][symInd].name = curTmpName;
             st.symbolTable[curFun][symInd].type = resType;
             st.symbolTable[curFun][symInd].cat = Category ::CONST;
+            st.symbolTable[curFun][symInd].isTemp = true;
             return 1;
         }
         relopTmp = addTmp;
@@ -657,9 +663,10 @@ int Parse::term() {
                 st.symbolTable[curFun][symInd].name = curTmpName;
                 st.symbolTable[curFun][symInd].type = resType;
                 st.symbolTable[curFun][symInd].cat = Category ::CONST;
+                st.symbolTable[curFun][symInd].isTemp = true;
                 return 1;
             } else {
-                cout << "缺少表达式" << endl;
+                cout << "mulop缺少表达式在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
         }
@@ -703,7 +710,7 @@ int Parse::factor() {
                 exit(0);
             }
         } else {
-            cout << "表达数错误" << endl;
+            cout << "factor表达数错误在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
     }
@@ -748,11 +755,11 @@ int Parse::call() {
                 if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
                     curIndex++;
                 } else {
-                    cout << "函数调用缺少右括号" << endl;
+                    cout << "函数调用缺少右括号在第" << tokenVec[curIndex].line << "行" << endl;
                     exit(0);
                 }
             } else {
-                cout << "函数调用参数错误" << endl;
+                cout << "函数调用参数错误在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
         } else {
@@ -779,7 +786,7 @@ int Parse::argList() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id) {
             curIndex++;
             if (!argList()) {
-                cout << ",后没有参数定义" << endl;
+                cout << ",后没有参数定义在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
         }

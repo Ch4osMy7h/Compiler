@@ -1,253 +1,187 @@
 		词法分析结果		
-       int   keyword         3
-         c identifer         1
-         ;  delimter        12
-       int   keyword         3
-       gcd identifer         2
-         (  delimter         6
-       int   keyword         3
-         u identifer         3
-         ,  delimter         4
-       int   keyword         3
-         v identifer         4
-         )  delimter         7
-         {  delimter        10
-        if   keyword        20
-         (  delimter         6
-         v identifer         5
-        ==  delimter        18
-         0       int         1
-         )  delimter         7
-    return   keyword        32
-         u identifer         6
-         ;  delimter        12
-      else   keyword        21
-    return   keyword        32
-       gcd identifer         7
-         (  delimter         6
-         v identifer         8
-         ,  delimter         4
-         u identifer         9
-         -  delimter         2
-         (  delimter         6
-         u identifer        10
-         /  delimter        38
-         v identifer        11
-         )  delimter         7
-         *  delimter        36
-         v identifer        12
-         )  delimter         7
-         ;  delimter        12
-         }  delimter        11
-    double   keyword         6
-       add identifer        13
-         (  delimter         6
-       int   keyword         3
-         x identifer        14
-         ,  delimter         4
-       int   keyword         3
-         y identifer        15
-         )  delimter         7
-         {  delimter        10
-       int   keyword         3
-         z identifer        16
-         ;  delimter        12
-         z identifer        17
-         =  delimter        19
-         x identifer        18
-         +  delimter         1
-         y identifer        19
-         ;  delimter        12
-    return   keyword        32
-         z identifer        20
-         ;  delimter        12
-         }  delimter        11
-       int   keyword         3
-         a identifer        21
-         ;  delimter        12
-       int   keyword         3
-      main identifer        22
-         (  delimter         6
-         )  delimter         7
-         {  delimter        10
-    double   keyword         6
-         b identifer        23
-         ;  delimter        12
-       int   keyword         3
-         a identifer        24
-         ;  delimter        12
-      char   keyword         7
-         d identifer        25
-         ;  delimter        12
-       int   keyword         3
-         x identifer        26
-         ;  delimter        12
-       int   keyword         3
-         y identifer        27
-         ;  delimter        12
-       int   keyword         3
-         t identifer        28
-         ;  delimter        12
-       int   keyword         3
-         s identifer        29
-         [  delimter         8
-        10       int         2
-         ]  delimter         9
-         ;  delimter        12
-         a identifer        30
-         =  delimter        19
-         b identifer        31
-         =  delimter        19
-         4       int         3
-         ;  delimter        12
-         x identifer        32
-         =  delimter        19
-         5       int         4
-         ;  delimter        12
-         y identifer        33
-         =  delimter        19
-        10       int         5
-         ;  delimter        12
-         t identifer        34
-         =  delimter        19
-         5       int         6
-         ;  delimter        12
-         d identifer        35
-         =  delimter        19
-       'a'      char         1
-         ;  delimter        12
-       gcd identifer        36
-         (  delimter         6
-         a identifer        37
-         ,  delimter         4
-         b identifer        38
-         )  delimter         7
-         ;  delimter        12
-       add identifer        39
-         (  delimter         6
-         x identifer        40
-         ,  delimter         4
-         y identifer        41
-         )  delimter         7
-         ;  delimter        12
-        if   keyword        20
-         (  delimter         6
-         a identifer        42
-         >  delimter         0
-         b identifer        43
-         )  delimter         7
-         a identifer        44
-         =  delimter        19
-         b identifer        45
-         +  delimter         1
-         1       int         7
-         *  delimter        36
-         a identifer        46
-         ;  delimter        12
-      else   keyword        21
-         b identifer        47
-         =  delimter        19
-         a identifer        48
-         +  delimter         1
-         1       int         8
-         ;  delimter        12
-     while   keyword        26
-         (  delimter         6
-         x identifer        49
-         <  delimter        17
-        10       int         9
-         )  delimter         7
-         {  delimter        10
-         x identifer        50
-         =  delimter        19
-         x identifer        51
-         +  delimter         1
-         1       int        10
-         ;  delimter        12
-         s identifer        52
-         [  delimter         8
-         2       int        11
-         ]  delimter         9
-         =  delimter        19
-         s identifer        53
-         [  delimter         8
-         3       int        12
-         ]  delimter         9
-         +  delimter         1
-         1       int        13
-         ;  delimter        12
-         }  delimter        11
-    return   keyword        32
-         0       int        14
-         ;  delimter        12
-         }  delimter        11
-  vardef       c     int      --
-  fundef     gcd     int       2
- paradef     int       u      __
- paradef     int       v      __
-      if      __      __      __
-      ==       v       0      t0
- ifbegin      t0      __      __
-  return       u      __      __
-    else      __      __      __
- funcall     gcd      __      __
-       /       u       v      t1
-       *      t1       v      t2
-       -       u      t2      t3
- paramin       v      __      __
- paramin      t3      __      __
- callend      __      __      __
-  return              __      __
-   ifend      __      __      __
-  funend      __      __      __
-  fundef     add  double       2
- paradef     int       x      __
- paradef     int       y      __
-  vardef       z     int      --
-       +       x       y      t4
-       =      t4      __       z
-  return       z      __      __
-  funend      __      __      __
-  vardef       a     int      --
-  fundef    main     int       0
-  vardef       b  double      --
-  vardef       a     int      --
-  vardef       d    char      --
-  vardef       x     int      --
-  vardef       y     int      --
-  vardef       t     int      --
-  vardef       s     arr      __
-       =       4      __       b
-       =       b      __       a
-       =       5      __       x
-       =      10      __       y
-       =       5      __       t
-       =     'a'      __       d
- funcall     gcd      __      __
- paramin       a      __      __
- paramin       b      __      __
- callend      __      __      __
- funcall     add      __      __
- paramin       x      __      __
- paramin       y      __      __
- callend      __      __      __
-      if      __      __      __
-       >       a       b      t5
- ifbegin      t5      __      __
-       *       1       a      t6
-       +       b      t6      t7
-       =      t7      __       a
-    else      __      __      __
-       +       a       1      t8
-       =      t8      __       b
-   ifend      __      __      __
-   while      __      __      __
-       <       x      10      t9
-      do      t9      __      __
-       +       x       1     t10
-       =     t10      __       x
-       +    s[3]       1     t11
-       =     t11      __    s[2]
-whileend      __      __      __
-  return       0      __      __
-  funend      __      __      __
+       int   keyword         3   line: 1
+         c identifer         1   line: 1
+         ;  delimter        12   line: 1
+       int   keyword         3   line: 3
+       gcd identifer         2   line: 3
+         (  delimter         6   line: 3
+       int   keyword         3   line: 3
+         u identifer         3   line: 3
+         ,  delimter         4   line: 3
+       int   keyword         3   line: 3
+         v identifer         4   line: 3
+         )  delimter         7   line: 3
+         {  delimter        10   line: 3
+        if   keyword        20   line: 4
+         (  delimter         6   line: 4
+         v identifer         5   line: 4
+        ==  delimter        18   line: 4
+         0       int         1   line: 4
+         )  delimter         7   line: 4
+    return   keyword        32   line: 4
+         u identifer         6   line: 4
+         ;  delimter        12   line: 4
+      else   keyword        21   line: 5
+    return   keyword        32   line: 5
+       gcd identifer         7   line: 5
+         (  delimter         6   line: 5
+         v identifer         8   line: 5
+         ,  delimter         4   line: 5
+         u identifer         9   line: 5
+         -  delimter         2   line: 5
+         (  delimter         6   line: 5
+         u identifer        10   line: 5
+         /  delimter        38   line: 5
+         v identifer        11   line: 5
+         )  delimter         7   line: 5
+         *  delimter        36   line: 5
+         v identifer        12   line: 5
+         )  delimter         7   line: 5
+         ;  delimter        12   line: 5
+         }  delimter        11   line: 6
+    double   keyword         6   line: 7
+       add identifer        13   line: 7
+         (  delimter         6   line: 7
+       int   keyword         3   line: 7
+         x identifer        14   line: 7
+         ,  delimter         4   line: 7
+       int   keyword         3   line: 7
+         y identifer        15   line: 7
+         )  delimter         7   line: 7
+         {  delimter        10   line: 7
+       int   keyword         3   line: 8
+         z identifer        16   line: 8
+         ;  delimter        12   line: 8
+         z identifer        17   line: 9
+         =  delimter        19   line: 9
+         x identifer        18   line: 9
+         +  delimter         1   line: 9
+         y identifer        19   line: 9
+         ;  delimter        12   line: 9
+    return   keyword        32   line: 10
+         z identifer        20   line: 10
+         ;  delimter        12   line: 10
+         }  delimter        11   line: 11
+       int   keyword         3   line: 12
+         a identifer        21   line: 12
+         ;  delimter        12   line: 12
+       int   keyword         3   line: 13
+      main identifer        22   line: 13
+         (  delimter         6   line: 13
+         )  delimter         7   line: 13
+         {  delimter        10   line: 13
+    double   keyword         6   line: 14
+         b identifer        23   line: 14
+         ;  delimter        12   line: 14
+       int   keyword         3   line: 15
+         a identifer        24   line: 15
+         ;  delimter        12   line: 15
+      char   keyword         7   line: 16
+         d identifer        25   line: 16
+         ;  delimter        12   line: 16
+       int   keyword         3   line: 17
+         x identifer        26   line: 17
+         ;  delimter        12   line: 17
+       int   keyword         3   line: 18
+         b identifer        27   line: 18
+         ;  delimter        12   line: 18
+       int   keyword         3   line: 19
+         y identifer        28   line: 19
+         ;  delimter        12   line: 19
+       int   keyword         3   line: 20
+         t identifer        29   line: 20
+         ;  delimter        12   line: 20
+       int   keyword         3   line: 21
+         s identifer        30   line: 21
+         [  delimter         8   line: 21
+        10       int         2   line: 21
+         ]  delimter         9   line: 21
+         ;  delimter        12   line: 21
+         a identifer        31   line: 22
+         =  delimter        19   line: 22
+         b identifer        32   line: 22
+         =  delimter        19   line: 22
+         4       int         3   line: 22
+         ;  delimter        12   line: 22
+         x identifer        33   line: 23
+         =  delimter        19   line: 23
+         5       int         4   line: 23
+         ;  delimter        12   line: 23
+         y identifer        34   line: 24
+         =  delimter        19   line: 24
+        10       int         5   line: 24
+         ;  delimter        12   line: 24
+         t identifer        35   line: 25
+         =  delimter        19   line: 25
+         5       int         6   line: 25
+         ;  delimter        12   line: 25
+         d identifer        36   line: 26
+         =  delimter        19   line: 26
+       'a'      char         1   line: 26
+         ;  delimter        12   line: 26
+       gcd identifer        37   line: 28
+         (  delimter         6   line: 28
+         a identifer        38   line: 28
+         ,  delimter         4   line: 28
+         b identifer        39   line: 28
+         )  delimter         7   line: 28
+         ;  delimter        12   line: 28
+       add identifer        40   line: 29
+         (  delimter         6   line: 29
+         x identifer        41   line: 29
+         ,  delimter         4   line: 29
+         y identifer        42   line: 29
+         )  delimter         7   line: 29
+         ;  delimter        12   line: 29
+        if   keyword        20   line: 30
+         (  delimter         6   line: 30
+         a identifer        43   line: 30
+         >  delimter         0   line: 30
+         b identifer        44   line: 30
+         )  delimter         7   line: 30
+         a identifer        45   line: 30
+         =  delimter        19   line: 30
+         b identifer        46   line: 30
+         +  delimter         1   line: 30
+         1       int         7   line: 30
+         *  delimter        36   line: 30
+         a identifer        47   line: 30
+         ;  delimter        12   line: 30
+      else   keyword        21   line: 31
+         b identifer        48   line: 31
+         =  delimter        19   line: 31
+         a identifer        49   line: 31
+         +  delimter         1   line: 31
+         1       int         8   line: 31
+         ;  delimter        12   line: 31
+     while   keyword        26   line: 32
+         (  delimter         6   line: 32
+         x identifer        50   line: 32
+         <  delimter        17   line: 32
+        10       int         9   line: 32
+         )  delimter         7   line: 32
+         {  delimter        10   line: 32
+         x identifer        51   line: 33
+         =  delimter        19   line: 33
+         x identifer        52   line: 33
+         +  delimter         1   line: 33
+         1       int        10   line: 33
+         ;  delimter        12   line: 33
+         s identifer        53   line: 34
+         [  delimter         8   line: 34
+         2       int        11   line: 34
+         ]  delimter         9   line: 34
+         =  delimter        19   line: 34
+         s identifer        54   line: 34
+         [  delimter         8   line: 34
+         3       int        12   line: 34
+         ]  delimter         9   line: 34
+         +  delimter         1   line: 34
+         1       int        13   line: 34
+         ;  delimter        12   line: 34
+         }  delimter        11   line: 35
+    return   keyword        32   line: 36
+         0       int        14   line: 36
+         ;  delimter        12   line: 36
+         }  delimter        11   line: 37
+变量b重定义in line 18

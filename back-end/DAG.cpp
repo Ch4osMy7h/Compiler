@@ -179,6 +179,5 @@ void test()
         for(auto qt :temp) {
             qt.print();
         }
-
     }
 }

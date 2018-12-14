@@ -26,6 +26,7 @@ public:
     TokenType type;
     string name;
     int id;
+    int line;
     Token();
     Token(TokenType type, string name, int id);
     void print();

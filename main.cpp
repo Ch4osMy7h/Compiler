@@ -5,6 +5,7 @@
 #include "Scanner.h"
 #include "front-end/Parse.h"
 #include "SymbolTable.h"
+#include "back-end/DAG.h"
 using namespace std;
 
 int main(void) {
@@ -38,14 +39,15 @@ int main(void) {
     */
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
-    parse.print();
-    int index = 0;
-    for (auto &i : symbolTable.symbolTable) {
-        cout << index++  << ":" << endl;
-        for (auto &j : i) {
-            if(j.name == "") cout << "find" << endl;
-            cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
-        }
-    }
+//    parse.print();
+//    int index = 0;
+//    for (auto &i : symbolTable.symbolTable) {
+//        cout << index++  << ":" << endl;
+//        for (auto &j : i) {
+//            if(j.name == "") cout << "find" << endl;
+//            cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
+//        }
+//    }
+//    test();
     return 0;
 }

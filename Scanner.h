@@ -24,7 +24,7 @@ private:
     StringTable& stringTable;
     vector<Token>& tokenVec;
     SymbolTable& symbolTable;
-
+    int CurLine = 1; //token所处行数
 public:
     Scanner(KeyWordTable & kt, IdentiferTable& it, DelimiterTable& dt, IntTable & inta, FloatTable& ft, CharTable& ct, StringTable& st, vector<Token>& tokenVec, SymbolTable& syt);
     void preProcess();

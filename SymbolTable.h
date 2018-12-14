@@ -70,6 +70,8 @@ struct SymbolTableElement {
     int vall;   //值单元分配
     int pfinalind; //如果是函数就给他分配函数表
     double constNum; //if这是个const
+    bool isTemp; //临时变量
+
 };
 
 
@@ -87,6 +89,7 @@ public:
     Type searchSymbolType(string name,int curFun);
     friend bool operator<(const SymbolTableElement& ls, SymbolTableElement& rs);
     void print();
+    bool isTempName(string name, int curFun); //判断是否是临时变量
     SymbolTable() {
         //全局符号表初始化
         vector<SymbolTableElement> allScopeVar;
