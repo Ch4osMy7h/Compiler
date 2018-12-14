@@ -10,7 +10,8 @@ vector<BasicBlock> generateBlocks(vector<QuadTuple>& ov)
     set<int> leaders;
     vector<BasicBlock> blocks;
     for(int i = 1; i < ov.size(); i++) {
-        if(ov[i].op == "JMP" || ov[i].op == "ifbegin" || ov[i].op == "while" || ov[i].op == "WE" || ov[i].op == "else") {
+        if(ov[i].op == "JMP" || ov[i].op == "ifbegin" || ov[i].op == "while"
+            || ov[i].op == "WE" || ov[i].op == "else") {
             //紧跟在转向语句后面的语句是入口语句
             leaders.insert(i + 1);
         } else if(ov[i].op == "LB" || ov[i].op == "ifend" || ov[i].op == "else" || ov[i].op == "while"
@@ -32,7 +33,7 @@ vector<BasicBlock> generateBlocks(vector<QuadTuple>& ov)
     return blocks;
 }
 
-void optimizate()
+void optimizate(vector<BasicBlock> blocks)
 {
 
 }
@@ -93,7 +94,8 @@ vector<DAGNode> optimizateOneBlock(BasicBlock block)
             }
             if(isNum(nodes[defineMap[qt.name2]].mainMark) && isNum(nodes[defineMap[qt.name1]].mainMark)) {
                 //如果两个操作数对应的节点的主标记都是常数
-                string ans = calculateNum(qt.op, nodes[defineMap[qt.name1]].mainMark, nodes[defineMap[qt.name2]].mainMark);
+                string ans = calculateNum(qt.op, nodes[defineMap[qt.name1]].mainMark,
+                        nodes[defineMap[qt.name2]].mainMark);
                 if(defineMap.find(ans) == defineMap.end()) {
                     //如果算出的ans没有定义过，就将它定义为一个叶子节点
                     n = addLeafNode(ans);
@@ -137,6 +139,9 @@ vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
 {
 
     auto isTemporary = [](string s) {return false;};//调试临时使用
+    auto getValue = [&](int pos) {
+        return nodes[pos].mainMark.empty() ? nodes[pos].addMarks[0] : nodes[pos].mainMark;
+    };
     vector<QuadTuple> ans;
     for(auto node: nodes) {
         if(node.isDeleted) {
@@ -149,9 +154,7 @@ vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
                 }
             }
         } else {
-            ans.push_back(QuadTuple(node.op, nodes[node.left].mainMark.empty() ? nodes[node.left].addMarks[0] : nodes[node.left].mainMark,
-                                    nodes[node.right].mainMark.empty() ? nodes[node.right].addMarks[0] : nodes[node.right].mainMark,
-                                    node.addMarks[0]));
+            ans.push_back(QuadTuple(node.op, getValue(node.left), getValue(node.right), node.addMarks[0]));
             for(int i = 1; i < node.addMarks.size(); i++) {
                 ans.push_back(QuadTuple("=", node.addMarks[0], " ", node.addMarks[i]));
             }
