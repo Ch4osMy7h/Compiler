@@ -17,6 +17,9 @@ public:
     string name1;
     string name2;
     string res;
+    bool name1Act;
+    bool name2Act;
+    bool resAct;
     QuadTuple(string o,  string n1, string n2, string r) {
         op = o;
         name1 = n1;
