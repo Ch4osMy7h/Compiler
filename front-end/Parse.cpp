@@ -121,12 +121,12 @@ int Parse::varDeclaration() {
             arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
             arrayInfoEle.clen = typeSize(curType);
             st.arrayTableVec.push_back(arrayInfoEle);
-            st.symbolTable[funCnt][symind].type = ARRAY;
-            st.symbolTable[funCnt][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
-            st.symbolTable[funCnt][symind].len = arrayInfoEle.clen * arrLen;
+            st.symbolTable[curFun][symind].type = ARRAY;
+            st.symbolTable[curFun][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
+            st.symbolTable[curFun][symind].len = arrayInfoEle.clen * arrLen;
         }else {
             quadVec.emplace_back("vardef", curName, curType, "--");
-            st.symbolTable[funCnt][symind].type = toType(curType);
+            st.symbolTable[curFun][symind].type = toType(curType);
             /*
              * vall
              */

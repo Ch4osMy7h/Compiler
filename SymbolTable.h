@@ -93,7 +93,7 @@ public:
     bool isTempName(string name, string curFun); //判断是否是临时变量
     bool isActive(string name,string curFun); //判断是否活跃
     void setActive(string name, string curFun); //设置为活跃
-    void setUnactive(string name, string curFun; //设置为非活跃
+    void setUnactive(string name, string curFun); //设置为非活跃
 
 
 
