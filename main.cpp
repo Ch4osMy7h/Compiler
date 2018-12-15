@@ -45,7 +45,7 @@ int main(void) {
         cout << index++  << ":" << endl;
         for (auto &j : i) {
 //            if(j.name == "a") cout << j.type << endl;
-            cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
+            cout << j.name << " " << parse.toSymTypeName(j.type) << " 活跃: " << j.isActive << " 临时:" << j.isTemp << endl;
         }
     }
     //test(quadVec);

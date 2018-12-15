@@ -193,6 +193,7 @@ int Parse::funDeclaration() {
         st.symbolTable[curFun][0].name = curName;
         st.symbolTable[curFun][0].type = toType(curType);
         st.symbolTable[curFun][0].cat = Category ::FUNCTION;
+        st.funToName[curName] = curFun; //函数名映射
 
 
 
@@ -561,6 +562,7 @@ int Parse::simpleExpression() {
                 st.symbolTable[curFun][symInd].type = Type::BOOL;
                 st.symbolTable[curFun][symInd].cat = Category ::CONST;
                 st.symbolTable[curFun][symInd].isTemp = true;
+                st.symbolTable[curFun][symInd].isActive = false;
                 expName = curTmpName;
             } else {
                 cout << "表达式错误" << endl;
@@ -617,6 +619,7 @@ int Parse::additiveExpression() {
             st.symbolTable[curFun][symInd].type = resType;
             st.symbolTable[curFun][symInd].cat = Category ::CONST;
             st.symbolTable[curFun][symInd].isTemp = true;
+            st.symbolTable[curFun][symInd].isActive = false;
             return 1;
         }
         relopTmp = addTmp;
@@ -664,6 +667,7 @@ int Parse::term() {
                 st.symbolTable[curFun][symInd].type = resType;
                 st.symbolTable[curFun][symInd].cat = Category ::CONST;
                 st.symbolTable[curFun][symInd].isTemp = true;
+                st.symbolTable[curFun][symInd].isActive = false;
                 return 1;
             } else {
                 cout << "mulop缺少表达式在第" << tokenVec[curIndex].line << "行" << endl;

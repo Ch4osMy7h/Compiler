@@ -72,7 +72,7 @@ struct SymbolTableElement {
     int pfinalind; //如果是函数就给他分配函数表
     double constNum; //if这是个const
     bool isTemp; //临时变量
-    bool isActive; //是否活跃；
+    bool isActive = true; //是否活跃,默认活跃；
 };
 
 
@@ -86,6 +86,10 @@ public:
     vector<vector<SymbolTableElement>> symbolTable; //符号表总表
     vector<FunctionTable> functionTableVec;
     vector<ArrayInfo> arrayTableVec;
+    map<string, int> funToName; //函数名映射 到 符号表
+
+
+
     int searchSymbolName(string name, int curInd);
     Type searchSymbolType(string name,int curFun);
     friend bool operator<(const SymbolTableElement& ls, SymbolTableElement& rs);
@@ -95,11 +99,11 @@ public:
     void setActive(string name, string curFun, bool active); //设置活跃信息
 
 
-
     SymbolTable() {
         //全局符号表初始化
         vector<SymbolTableElement> allScopeVar;
         symbolTable.push_back(allScopeVar);
+        funToName["allScopeVar"] = 0;
     }
 
 };
