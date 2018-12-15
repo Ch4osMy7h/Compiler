@@ -12,6 +12,7 @@ void Scanner::scan(string filename) {
     char curChar; //当前字符
     int pos = 0;  //当前位置
     string buffer = ""; //识别到的串
+    char* over = reinterpret_cast<char *>('#');
     FILE* fp;
     Automatic at; //初始化自动机
     //int comment_cnt = 0;
@@ -19,13 +20,26 @@ void Scanner::scan(string filename) {
     if( (fp = fopen("../src.txt", "r")) == NULL) {
         cout << "open Error" << endl;
     }
-    while ((curChar = static_cast<char>(getc(fp))) != '#') {
-        //跳过注释
+    while ((curChar = static_cast<char>(getc(fp))) != '#' ) {
+        if(feof(fp)) {
+            cout << state << endl;
+            if(state == 1 && stateBefore == 1) {}
+            else if(state) {
+                buffer += curChar;
+            } else {
+                tokenGenerate(stateBefore, buffer);
+            }
+            break;
+        }
+//        cout << 1 << endl;
         if(comment && curChar != '*') {
             continue;
         } else if(curChar == '*' && comment){
             curChar = static_cast<char>(getc(fp));
             if(curChar == '/') {
+                if(feof(fp)) {
+                    break;
+                }
                 comment = false;
                 continue;
             } else {
@@ -40,6 +54,9 @@ void Scanner::scan(string filename) {
             pos = 0;
             buffer = "";
             state = 1;
+            if(feof(fp)) {
+                break;
+            }
             continue;
         }
         stateBefore = state;
@@ -52,6 +69,9 @@ void Scanner::scan(string filename) {
             //判断是否为注释
             if(stateBefore == 43) {
                 comment = true;
+                if(feof(fp)) {
+                    break;
+                }
                 reset(fp, state, pos, buffer);
                 continue;
             }
@@ -59,6 +79,7 @@ void Scanner::scan(string filename) {
             reset(fp, state, pos, buffer);
         }
     }
+    fclose(fp);
 }
 
 void Scanner::tokenGenerate(int state_before, string buffer) {

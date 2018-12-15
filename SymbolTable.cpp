@@ -84,7 +84,7 @@ bool SymbolTable::isTempName(string name, string curFun) {
             return true;
         }
     }
-    cout << "未找到该变量" << endl;
+//    cout << "未找到该变量" << endl;
     return false;
 }
 
@@ -95,7 +95,7 @@ bool SymbolTable::isActive(string name, string curFun) {
             return i.isActive;
         }
     }
-    cout << "未找到该变量" << endl;
+//    cout << "未找到该变量" << endl;
     return false;
 }
 
@@ -106,5 +106,5 @@ void SymbolTable::setActive(string name, string curFun, bool active) {
             i.isActive = active;
         }
     }
-    cout << "未找到该变量" << endl;
+//    cout << "未找到该变量" << endl;
 }

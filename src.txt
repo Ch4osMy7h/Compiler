@@ -11,20 +11,21 @@ double add(int x,int y){
 }
 int a;
 int main(){
-   int b;
-   int a;
-   char d;
-   int x;
-   int y;
-   int t;
-   int s[10];
-   a=b=4;
-   x=5+7*3;
-   y=10;
-   t=5;
-   gcd(a,b);
-   add(x,y);
-   if (a>b) a=b+1*a;
-   else b=t;
+    int b;
+    int a;
+    char d;
+    int x;
+    int y;
+    int t;
+    int s[10];
+    a=b=4;
+    x=3;
+    t=4;
+    x = (a+b) / (a * (a + b));
+    y=10;
+    gcd(a,b);
+    add(x,y);
+    if (a>b) a=b+1*a;
+    else b=t;
 }
 #

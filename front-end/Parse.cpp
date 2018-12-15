@@ -15,6 +15,7 @@ using namespace std;
  * 变量重定义的作用域判断
  * 缺少对于bool类型的判断
  * 数组越界
+ * 是否赋值的判断
  */
 
 
@@ -641,10 +642,12 @@ int Parse::addop() {
 int Parse::term() {
     string helper_factor, helper_term;
     Type helper_factor_type, helper_term_type;
+    string helper_mulop;
     if (factor()) {
         helper_factor = multiTmp;
         helper_factor_type = multiType;
         if (mulop()) {
+            helper_mulop = multiopName;
             if (term()) {
                 helper_term = addTmp;
                 helper_term_type = addType;
@@ -654,7 +657,7 @@ int Parse::term() {
                 }
 
                 curTmpName = "t" + to_string(++t_num);
-                quadVec.emplace_back(multiopName, helper_factor, helper_term, curTmpName);
+                quadVec.emplace_back(helper_mulop, helper_factor, helper_term, curTmpName);
                 addTmp = curTmpName;
                 addType = helper_factor_type;
 

@@ -70,7 +70,7 @@
          (  delimter         6   line: 13
          )  delimter         7   line: 13
          {  delimter        10   line: 13
-    double   keyword         6   line: 14
+       int   keyword         3   line: 14
          b identifer        23   line: 14
          ;  delimter        12   line: 14
        int   keyword         3   line: 15
@@ -83,105 +83,193 @@
          x identifer        26   line: 17
          ;  delimter        12   line: 17
        int   keyword         3   line: 18
-         b identifer        27   line: 18
+         y identifer        27   line: 18
          ;  delimter        12   line: 18
        int   keyword         3   line: 19
-         y identifer        28   line: 19
+         t identifer        28   line: 19
          ;  delimter        12   line: 19
        int   keyword         3   line: 20
-         t identifer        29   line: 20
+         s identifer        29   line: 20
+         [  delimter         8   line: 20
+        10       int         2   line: 20
+         ]  delimter         9   line: 20
          ;  delimter        12   line: 20
-       int   keyword         3   line: 21
-         s identifer        30   line: 21
-         [  delimter         8   line: 21
-        10       int         2   line: 21
-         ]  delimter         9   line: 21
+         a identifer        30   line: 21
+         =  delimter        19   line: 21
+         b identifer        31   line: 21
+         =  delimter        19   line: 21
+         4       int         3   line: 21
          ;  delimter        12   line: 21
-         a identifer        31   line: 22
+         x identifer        32   line: 22
          =  delimter        19   line: 22
-         b identifer        32   line: 22
-         =  delimter        19   line: 22
-         4       int         3   line: 22
+         5       int         4   line: 22
+         +  delimter         1   line: 22
+         7       int         5   line: 22
+         *  delimter        36   line: 22
+         3       int         6   line: 22
          ;  delimter        12   line: 22
-         x identifer        33   line: 23
+         y identifer        33   line: 23
          =  delimter        19   line: 23
-         5       int         4   line: 23
+        10       int         7   line: 23
          ;  delimter        12   line: 23
-         y identifer        34   line: 24
+         t identifer        34   line: 24
          =  delimter        19   line: 24
-        10       int         5   line: 24
+         5       int         8   line: 24
          ;  delimter        12   line: 24
-         t identifer        35   line: 25
-         =  delimter        19   line: 25
-         5       int         6   line: 25
+       gcd identifer        35   line: 25
+         (  delimter         6   line: 25
+         a identifer        36   line: 25
+         ,  delimter         4   line: 25
+         b identifer        37   line: 25
+         )  delimter         7   line: 25
          ;  delimter        12   line: 25
-         d identifer        36   line: 26
-         =  delimter        19   line: 26
-       'a'      char         1   line: 26
+       add identifer        38   line: 26
+         (  delimter         6   line: 26
+         x identifer        39   line: 26
+         ,  delimter         4   line: 26
+         y identifer        40   line: 26
+         )  delimter         7   line: 26
          ;  delimter        12   line: 26
-       gcd identifer        37   line: 28
-         (  delimter         6   line: 28
-         a identifer        38   line: 28
-         ,  delimter         4   line: 28
-         b identifer        39   line: 28
-         )  delimter         7   line: 28
+        if   keyword        20   line: 27
+         (  delimter         6   line: 27
+         a identifer        41   line: 27
+         >  delimter         0   line: 27
+         b identifer        42   line: 27
+         )  delimter         7   line: 27
+         a identifer        43   line: 27
+         =  delimter        19   line: 27
+         b identifer        44   line: 27
+         +  delimter         1   line: 27
+         1       int         9   line: 27
+         *  delimter        36   line: 27
+         a identifer        45   line: 27
+         ;  delimter        12   line: 27
+      else   keyword        21   line: 28
+         b identifer        46   line: 28
+         =  delimter        19   line: 28
+         t identifer        47   line: 28
          ;  delimter        12   line: 28
-       add identifer        40   line: 29
-         (  delimter         6   line: 29
-         x identifer        41   line: 29
-         ,  delimter         4   line: 29
-         y identifer        42   line: 29
-         )  delimter         7   line: 29
-         ;  delimter        12   line: 29
-        if   keyword        20   line: 30
-         (  delimter         6   line: 30
-         a identifer        43   line: 30
-         >  delimter         0   line: 30
-         b identifer        44   line: 30
-         )  delimter         7   line: 30
-         a identifer        45   line: 30
-         =  delimter        19   line: 30
-         b identifer        46   line: 30
-         +  delimter         1   line: 30
-         1       int         7   line: 30
-         *  delimter        36   line: 30
-         a identifer        47   line: 30
-         ;  delimter        12   line: 30
-      else   keyword        21   line: 31
-         b identifer        48   line: 31
-         =  delimter        19   line: 31
-         a identifer        49   line: 31
-         +  delimter         1   line: 31
-         1       int         8   line: 31
-         ;  delimter        12   line: 31
-     while   keyword        26   line: 32
-         (  delimter         6   line: 32
-         x identifer        50   line: 32
-         <  delimter        17   line: 32
-        10       int         9   line: 32
-         )  delimter         7   line: 32
-         {  delimter        10   line: 32
-         x identifer        51   line: 33
-         =  delimter        19   line: 33
-         x identifer        52   line: 33
-         +  delimter         1   line: 33
-         1       int        10   line: 33
-         ;  delimter        12   line: 33
-         s identifer        53   line: 34
-         [  delimter         8   line: 34
-         2       int        11   line: 34
-         ]  delimter         9   line: 34
-         =  delimter        19   line: 34
-         s identifer        54   line: 34
-         [  delimter         8   line: 34
-         3       int        12   line: 34
-         ]  delimter         9   line: 34
-         +  delimter         1   line: 34
-         1       int        13   line: 34
-         ;  delimter        12   line: 34
-         }  delimter        11   line: 35
-    return   keyword        32   line: 36
-         0       int        14   line: 36
-         ;  delimter        12   line: 36
-         }  delimter        11   line: 37
-变量b重定义in line 18
+         }  delimter        11   line: 29
+b不是临时变量！
+a不是临时变量！
+x不是临时变量！
+y不是临时变量！
+t不是临时变量！
+b不是临时变量！
+19
+第0个基本块:
+所属函数名：
+开始：-1 结束：-1
+  vardef       c     int      --
+第1个基本块:
+所属函数名：gcd
+开始：4 结束：4
+  fundef     gcd     int       2
+ paradef     int       u      __
+ paradef     int       v      __
+      if      __      __      __
+      ==       v       0      t0
+ ifbegin      t0      __      __
+第2个基本块:
+所属函数名：gcd
+开始：-1 结束：-1
+  return       u      __      __
+第3个基本块:
+所属函数名：gcd
+开始：-1 结束：-1
+    else      __      __      __
+第4个基本块:
+所属函数名：gcd
+开始：1 结束：3
+ funcall     gcd      __      __
+       /       u       v      t1
+       *      t1       v      t2
+       -       u      t2      t3
+ paramin       v      __      __
+ paramin      t3      __      __
+第5个基本块:
+所属函数名：gcd
+开始：-1 结束：-1
+ callend      __      __      __
+  return              __      __
+第6个基本块:
+所属函数名：gcd
+开始：-1 结束：-1
+   ifend      __      __      __
+第7个基本块:
+所属函数名：gcd
+开始：-1 结束：-1
+  funend      __      __      __
+第8个基本块:
+所属函数名：add
+开始：4 结束：5
+  fundef     add  double       2
+ paradef     int       x      __
+ paradef     int       y      __
+  vardef       z     int      --
+       +       x       y      t4
+       =      t4               z
+  return       z      __      __
+第9个基本块:
+所属函数名：add
+开始：-1 结束：-1
+  funend      __      __      __
+  vardef       a     int      --
+第10个基本块:
+所属函数名：main
+开始：8 结束：14
+  fundef    main     int       0
+  vardef       b     int      --
+  vardef       a     int      --
+  vardef       d    char      --
+  vardef       x     int      --
+  vardef       y     int      --
+  vardef       t     int      --
+  vardef       s     arr      __
+       =       4               b
+       =       4               a
+       =      26               x
+       =      10               y
+       =       5               t
+第11个基本块:
+所属函数名：main
+开始：-1 结束：-1
+ funcall     gcd      __      __
+ paramin       a      __      __
+ paramin       b      __      __
+第12个基本块:
+所属函数名：main
+开始：-1 结束：-1
+ callend      __      __      __
+第13个基本块:
+所属函数名：main
+开始：-1 结束：-1
+ funcall     add      __      __
+ paramin       x      __      __
+ paramin       y      __      __
+第14个基本块:
+所属函数名：main
+开始：2 结束：2
+ callend      __      __      __
+      if      __      __      __
+       >       a       b      t7
+ ifbegin      t7      __      __
+第15个基本块:
+所属函数名：main
+开始：0 结束：2
+       *       1       a      t8
+       +       b      t8      t9
+       =      t9               a
+    else      __      __      __
+第16个基本块:
+所属函数名：main
+开始：0 结束：0
+       =       t               b
+第17个基本块:
+所属函数名：main
+开始：-1 结束：-1
+   ifend      __      __      __
+第18个基本块:
+所属函数名：main
+开始：-1 结束：-1
+  funend      __      __      __
