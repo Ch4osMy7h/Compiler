@@ -105,6 +105,9 @@ public:
 };
 
 
+extern SymbolTable symbolTable;
+
+
 
 
 

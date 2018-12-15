@@ -16,5 +16,10 @@ T string2num(string str) {
 }
 bool isNum(string str);
 bool isOperator(string str);
+bool isTempName(string name, string curFun);
+bool isActive(string name,string curFun); //判断是否活跃
+void setActive(string name, string curFun, bool active); //设置活跃信息
+
 string calculateNum(string op, string a, string b);
+
 #endif //COMPILER_MYUTILS_H
