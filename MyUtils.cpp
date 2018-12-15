@@ -3,6 +3,7 @@
 //
 #include "MyUtils.h"
 #include <cctype>
+#include "SymbolTable.h"
 bool isNum(string str)
 {
     return !str.empty() && isdigit(str[0]);
@@ -32,4 +33,23 @@ bool isOperator(string str)
     return str == "+" || str == "-" || str == "*" || str == "/" ||
             str == "<" || str == ">" || str == "==" || str == "=";
 
+}
+
+
+bool isTempName(string name, string curFun)
+{
+    if(!symbolTable.isTempName(name, curFun)) {
+        cout << name << "不是临时变量！" << endl;
+    }
+    return symbolTable.isTempName(name, curFun);
+}
+
+bool isActive(string name, string curFun)
+{
+    return symbolTable.isActive(name, curFun);
+}
+
+void setActive(string name, string curFun, bool active)
+{
+    symbolTable.setActive(name, curFun, active);
 }

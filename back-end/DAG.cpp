@@ -6,11 +6,9 @@
 #include "../MyUtils.h"
 #include "BasicBlock.h"
 
-
-vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
+vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes, string curFunc)
 {
 
-    auto isTemporary = [](string s) {return false;};//调试临时使用
     auto getValue = [&](int pos) {
         return nodes[pos].mainMark.empty() ? nodes[pos].addMarks[0] : nodes[pos].mainMark;
     };
@@ -21,7 +19,7 @@ vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes)
         }
         if(node.left == -1 && node.right == -1) {
             for(auto addMark: node.addMarks) {
-                if(!isTemporary(addMark)) {
+                if(!isTempName(addMark, curFunc)) {
                     ans.push_back(QuadTuple("=", node.mainMark, " ", addMark));
                 }
             }
@@ -144,15 +142,18 @@ void optimize(vector<BasicBlock>& blocks)
         if(block.start == -1 || block.finish == -1) {
             continue;
         }
-        block.block = connect(block.exprVectorBefore(), DAGToQuadTuple(optimizeOneBlock(block.exprVector())),
+        block.block = connect(block.exprVectorBefore(),
+                DAGToQuadTuple(optimizeOneBlock(block.exprVector()), block.curFun),
                 block.exprVectorAfter());
     }
 }
 
 
 
-void test()
+
+void test(vector<QuadTuple> quadVec)
 {
+    /*
     vector<QuadTuple> quadVec = {QuadTuple("=", "3", " ", "t0"),
                                  QuadTuple("*", "2", "t0", "t1"),
                                  QuadTuple("+", "R", "r", "t2"),
@@ -169,9 +170,9 @@ void test()
     while(in >> a) {
         in >> b >> c >> d;
         quadVec.push_back(QuadTuple(a, b, c, d));
-    }
+    }*/
     auto blocks = generateBlocks(quadVec);
-    //optimize(blocks);
+    optimize(blocks);
     cout << blocks.size() << endl;
     int i = 0;
     for(auto block: blocks) {

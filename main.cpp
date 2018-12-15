@@ -7,6 +7,7 @@
 #include "SymbolTable.h"
 #include "back-end/DAG.h"
 using namespace std;
+SymbolTable symbolTable;
 
 int main(void) {
     /*
@@ -19,7 +20,6 @@ int main(void) {
     FloatTable floatTable;
     CharTable charTable;
     StringTable stringTable;
-    SymbolTable symbolTable;
     vector<Token> tokenVec;
     vector<QuadTuple> quadVec;
     Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
@@ -37,7 +37,7 @@ int main(void) {
         this->funCnt = 0;
     }
     */
-    /*Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
+    Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
     parse.print();
     int index = 0;
@@ -47,7 +47,9 @@ int main(void) {
 //            if(j.name == "a") cout << j.type << endl;
             cout << j.name << " " << parse.toSymTypeName(j.type)  << endl;
         }
-    }*/
-    test();
+    }
+    //test(quadVec);
+    cout << symbolTable.isTempName("t5", "main") << endl;
+
     return 0;
 }
