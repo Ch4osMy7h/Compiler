@@ -593,7 +593,8 @@ int Parse::additiveExpression() {
     if(term())  {
         helper = addTmp;
         helper_Type = addType;
-        if(addop()) {
+        bool inWhile = false;
+        while (addop()) {
             if(!term()) {
                 cout << "addop后面缺少表达式在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
@@ -606,8 +607,6 @@ int Parse::additiveExpression() {
             }
 
             Type resType = typeSwitch(helper_Type, addType);
-
-
             curTmpName = "t"+to_string(++t_num);
             quadVec.emplace_back(addopName, helper, addTmp, curTmpName);
             relopTmp = curTmpName;
@@ -621,10 +620,17 @@ int Parse::additiveExpression() {
             st.symbolTable[curFun][symInd].cat = Category ::CONST;
             st.symbolTable[curFun][symInd].isTemp = true;
             st.symbolTable[curFun][symInd].isActive = false;
-            return 1;
+            helper = curTmpName;
+            helper_Type = addType;
+            inWhile = true;
         }
-        relopTmp = addTmp;
-        relopType = addType;
+        if(inWhile) {
+            relopTmp = curTmpName;
+            relopType = addType;
+        } else {
+            relopTmp = addTmp;
+            relopType = addType;
+        }
         return 1;
     }
     return 0;
@@ -879,10 +885,7 @@ void Parse::print() {
 }
 
 bool Parse::typePriority(Type left, Type right) {
-    if( (left == DOUBLE || left == INT || left == BOOL) && (right == CHAR) ) {
-        return false;
-    }
-    return true;
+    return !((left == DOUBLE || left == INT || left == BOOL) && (right == CHAR));
 }
 
 bool Parse::isChar(Token &token) {
