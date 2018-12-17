@@ -117,6 +117,8 @@ public:
     bool isChar(Token &token);
 
     Type typeSwitch(Type type, Type addType);
+
+    int varDeclarationList();
 };
 
 

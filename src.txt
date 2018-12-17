@@ -1,4 +1,4 @@
-int c;
+int a,b,c,d;
 /*int c;*/
 int gcd(int u,int v){
     if (v==0) return u;
@@ -10,9 +10,8 @@ double add(int x,int y){
     z=x+y;
     return z;
 }
-int a;
 int main(){
-    int b;
+    int b,c,de;
     int a;
     char d;
     int x;

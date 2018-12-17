@@ -109,11 +109,6 @@ int Parse::varDeclaration() {
             }
             arrayFlag = true;
         }
-        if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
-            curIndex++;
-        } else {
-            cout << "变量声明缺少;" << tokenVec[curIndex].line - 1 << "行" << endl;
-        }
         if(arrayFlag) {
             quadVec.emplace_back("vardef", curName, "arr", "__");
             ArrayInfo arrayInfoEle{};
@@ -132,10 +127,85 @@ int Parse::varDeclaration() {
              * vall
              */
         }
+        varDeclarationList();
         return 1;
     }
     curIndex = index;
     return 0;
+}
+
+int Parse::varDeclarationList() {
+    int index = curIndex;
+    if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[","] == tokenVec[curIndex].id) {
+        curIndex++;
+            if(tokenVec[curIndex].type != TokenType::IDENTIFIER) {
+                cout << "类型声明后必须跟着标识符在第" << tokenVec[curIndex].line << "行" << endl;
+                exit(0);
+            }
+            string curName = tokenVec[curIndex].name;
+            int stIndex = 0;
+            stIndex = st.searchSymbolName(tokenVec[curIndex].name, curFun);
+            if(stIndex >= 0) {
+//            cout << tokenVec[curIndex].name << endl;
+                cout << "变量"<<  tokenVec[curIndex].name <<"重定义" << "在第" << tokenVec[curIndex].line  << "行" << endl;
+                exit(0);
+            }
+
+            curSymInd++;
+            st.symbolTable[curFun].emplace_back(SymbolTableElement());
+            int symind = static_cast<int>(st.symbolTable[curFun].size() - 1);
+            st.symbolTable[curFun][symind].name = curName;
+            st.symbolTable[curFun][symind].cat = Category::VARIABLE;
+
+
+            bool arrayFlag = false;
+            curIndex++;
+            int arrLen = 0;
+
+            if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["["] == tokenVec[curIndex].id) {
+                curIndex++;
+                if(tokenVec[curIndex].type ==  INTCONST) {
+                    arrLen = string2num<int >(tokenVec[curIndex].name);
+                    curIndex++;
+                } else {
+                    cout << "数组长度必须是整型变量在第" << tokenVec[curIndex].line << "行" << endl;
+                    exit(0);
+                }
+                if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["]"] == tokenVec[curIndex].id) {
+                    curIndex++;
+                } else {
+                    cout << "数组声明缺少右括号在第" << tokenVec[curIndex].line << "行" << endl;
+                    exit(0);
+                }
+                arrayFlag = true;
+            }
+            if(arrayFlag) {
+                quadVec.emplace_back("vardef", curName, "arr", "__");
+                ArrayInfo arrayInfoEle{};
+                arrayInfoEle.low = 0;
+                arrayInfoEle.type = toType(curType);
+                arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
+                arrayInfoEle.clen = typeSize(curType);
+                st.arrayTableVec.push_back(arrayInfoEle);
+                st.symbolTable[curFun][symind].type = ARRAY;
+                st.symbolTable[curFun][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
+                st.symbolTable[curFun][symind].len = arrayInfoEle.clen * arrLen;
+            }else {
+                quadVec.emplace_back("vardef", curName, curType, "--");
+                st.symbolTable[curFun][symind].type = toType(curType);
+                /*
+                 * vall
+                 */
+            }
+            varDeclarationList();
+    } else if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
+        curIndex++;
+        return 1;
+    } else {
+        cout << "变量声明缺少;" << tokenVec[curIndex].line - 1 << "行" << endl;
+        exit(0);
+    }
+    return 1;
 }
 
 int Parse::typeSpecifier() {
@@ -907,6 +977,7 @@ Type Parse::typeSwitch(Type left, Type right) {
         return Type::INT;
     }
 }
+
 
 
 
