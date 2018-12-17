@@ -4,6 +4,7 @@ int gcd(int u,int v){
     if (v==0) return u;
     else return gcd(v,u-(u/v)*v);
 }
+/*
 double add(int x,int y){
     int z;
     z=x+y;
@@ -21,11 +22,12 @@ int main(){
     a=b=4;
     x=3;
     t=4;
-    x = (a+b) / (a * (a + b));
+    x = (a+b)*(a+b+1)-c;
     y=10;
     gcd(a,b);
-    add(x,y);
+    y = a + add(x,y);
     if (a>b) a=b+1*a;
     else b=t;
 }
+*/
 #

@@ -779,7 +779,14 @@ int Parse::call() {
             curIndex = index;
             return 0;
         }
-        quadVec.emplace_back("callend", "__", "__", "__");
+        curTmpName = "t"+to_string(++t_num);
+        quadVec.emplace_back("callend", "__", "__", curTmpName);
+        st.symbolTable[curFun].push_back(SymbolTableElement());
+        callTmp = curTmpName;
+
+        auto symInd = st.symbolTable[curFun].size() - 1;
+        st.symbolTable[curFun][symInd].name = curTmpName;
+        st.symbolTable[curFun][symInd].isTemp = true;
         return 1;
     }
     curIndex = index;
