@@ -283,8 +283,6 @@ int Parse::funDeclaration() {
             st.symbolTable[curFun][symInd].type = toType(*iter_type);
             st.symbolTable[curFun][symInd].cat = Category ::FORMALPARAM;
 //            st.symbolTable[curFun][symInd].vall = 0;
-
-
             quadVec.emplace_back("paradef", *iter_type, *iter_name, "__");
             iter_type++; iter_name++;
         }
@@ -518,8 +516,20 @@ int Parse::returnStmt() {
     if(tokenVec[curIndex].type == KEYWORD && keyWordTable.index["return"] == tokenVec[curIndex].id) {
         curIndex++;
         if(!expression()) {
+            Type returnType = st.symbolTable[curFun][0].type;
+            //cout << returnType << endl;
+            if(returnType != Type::VOID) {
+                cout << "函数类型需要返回值在第" << tokenVec[curIndex].line << "行" << endl;
+                exit(0);
+            }
             quadVec.emplace_back("return", "__", "__", "__");
         } else {
+            Type returnType = st.symbolTable[curFun][0].type;
+//            cout << returnType << endl;
+            if(returnType == Type::VOID) {
+                cout << "函数类型是void 不需要返回值在第" << tokenVec[curIndex].line << "行" << endl;
+                exit(0);
+            }
             //return语句四元式设计
             quadVec.emplace_back("return", expName, "__", "__");
         }
@@ -952,13 +962,21 @@ Type Parse::toType(string basic_string) {
         return Type ::ARRAY;
     } else if(basic_string == "string") {
         return Type::STRING;
+    } else if(basic_string == "void") {
+        return Type::VOID;
     }
 }
 
-void Parse::print() {
-    for(auto &i: quadVec) {
-        i.print();
+void Parse::print(string filename) {
+    ofstream out;
+    out.open(filename, ios::out | ios::trunc);
+    if(!out) {
+        cout << "Open QuadVec File Error" << endl;
     }
+    for(auto &i: quadVec) {
+        out << setw(8) << i.op << setw(8) << i.name1 << setw(8) << i.name2 << setw(8) << i.res << endl;
+    }
+    out.close();
 }
 
 bool Parse::typePriority(Type left, Type right) {

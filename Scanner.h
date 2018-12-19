@@ -32,7 +32,7 @@ public:
     void tokenGenerate(int state_before, string buffer);
     string encoder(int state);
     void reset(FILE* fp, int& state, int& pos, string& buffer);
-    void showLex();
+    void showLex(string filename);
     string numToName(int num);
 };
 

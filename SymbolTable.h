@@ -16,7 +16,8 @@ enum Type {
     CHAR = 3,
     BOOL = 4,
     ARRAY = 5,
-    STRING = 6
+    STRING = 6,
+    VOID = 7
 };
 
 struct ArrayInfo {

@@ -110,7 +110,7 @@ public:
 
     Type toType(string basic_string);
 
-    void print();
+    void print(string filename);
 
     bool typePriority(Type left, Type right);
 

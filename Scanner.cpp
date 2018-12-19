@@ -17,7 +17,7 @@ void Scanner::scan(string filename) {
     Automatic at; //初始化自动机
     //int comment_cnt = 0;
     //暂时取消
-    if( (fp = fopen("../src.txt", "r")) == NULL) {
+    if( (fp = fopen(filename.c_str(), "r")) == NULL) {
         cout << "open Error" << endl;
     }
     while ((curChar = static_cast<char>(getc(fp))) != '#' ) {
@@ -180,12 +180,18 @@ void Scanner::reset(FILE *fp, int &state, int &pos, string &buffer) {
 }
 
 //显示词法分析结果
-void Scanner::showLex() {
-    freopen("../lex.txt", "w", stdout);
-    cout << "\t\t词法分析结果\t\t" << endl;
-    for(auto val : tokenVec) {
-        cout << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id << "   line: " << val.line << endl;
+void Scanner::showLex(string filename) {
+    ofstream out;
+    out.open(filename, ios::out | ios::trunc);
+    if(!out) {
+        cout << "Open Lexical File Error" << endl;
     }
+    out << "\t\t词法分析结果\t\t" << endl;
+    for(auto val : tokenVec) {
+        out << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id << "   line: " << val.line << endl;
+    }
+    out.close();
+    out.clear();
 }
 
 
