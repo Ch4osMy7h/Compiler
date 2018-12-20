@@ -1,32 +1,8 @@
-int a,b,c,d;
-/*int c;*/
-int gcd(int u,int v){
-    if (v==0) return u;
-    else return gcd(v,u-(u/v)*v);
-}
-/*
-double add(int x,int y){
-    int z;
-    z=x+y;
-    return z;
-}
 int main(){
-    int b,c,de;
-    int a;
-    char d;
-    int x;
-    int y;
-    int t;
-    int s[10];
-    a=b=4;
-    x=3;
-    t=4;
-    x = (a+b)*(a+b+1)-c;
-    y=10;
-    gcd(a,b);
-    y = a + add(x,y);
-    if (a>b) a=b+1*a;
-    else b=t;
+    int a, b, x, y;
+    if(a + b < 10) {
+        a = 1;
+    }
+    return 0;
 }
-*/
 #

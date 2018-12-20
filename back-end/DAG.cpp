@@ -5,6 +5,7 @@
 #include "DAG.h"
 #include "../MyUtils.h"
 #include "BasicBlock.h"
+#include "Assembly.h"
 
 vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes, string curFunc)
 {
@@ -20,20 +21,22 @@ vector<QuadTuple> DAGToQuadTuple(vector<DAGNode> nodes, string curFunc)
         if(node.left == -1 && node.right == -1) {
             for(auto addMark: node.addMarks) {
                 if(!isTempName(addMark, curFunc)) {
-                    ans.push_back(QuadTuple("=", node.mainMark, " ", addMark));
+                    ans.emplace_back("=", node.mainMark, "__", addMark);
                 }
             }
         } else {
-            ans.push_back(QuadTuple(node.op, getValue(node.left), getValue(node.right), node.addMarks[0]));
+            ans.emplace_back(node.op, getValue(node.left), getValue(node.right), node.addMarks[0]);
             for(int i = 1; i < node.addMarks.size(); i++) {
-                ans.push_back(QuadTuple("=", node.addMarks[0], " ", node.addMarks[i]));
+                if(!isTempName(node.addMarks[i], curFunc)) {
+                    ans.emplace_back("=", node.addMarks[0], "__", node.addMarks[i]);
+                }
             }
         }
     }
     return ans;
 }
 
-vector<DAGNode> optimizeOneBlock(vector<QuadTuple> quadVector)
+vector<DAGNode> optimizeOneBlock(vector<QuadTuple> quadVector, string curFunc)
 {
     vector<DAGNode> nodes;
     map<string, int> defineMap;
@@ -47,24 +50,22 @@ vector<DAGNode> optimizeOneBlock(vector<QuadTuple> quadVector)
 
     //用来处理与四元式的res字段相关事宜的functor
     auto defineRes = [&](string res, int n) {
-        if(defineMap.find(res) == defineMap.end()) {
+        if(defineMap.find(res) != defineMap.end()) {
             //res未定义过节点，将res附加在位置为n的附加标记上
-            nodes[n].addMarks.push_back(res);
-            defineMap[res] = n;
-        } else {
-            //res定义过节点
             int pos = defineMap[res];
             //先删除已有的附加标记
-            if (nodes[pos].left != -1 || nodes[pos].right != -1) {
+            if (true) {
                 //如果不是叶子节点才删除
                 auto it = find(nodes[pos].addMarks.begin(), nodes[pos].addMarks.end(), res);
                 if(it != nodes[pos].addMarks.end()) {
                     nodes[pos].addMarks.erase(it);
                 }
             }
-            //再把res附加在位置为n的附加标记上
-            nodes[n].addMarks.push_back(res);
-            defineMap[res] = n;
+        }
+        nodes[n].addMarks.push_back(res);
+        defineMap[res] = n;
+        if(!isTempName(res, curFunc)) {
+            swap(nodes[n].addMarks[0], nodes[n].addMarks[nodes[n].addMarks.size() - 1]);
         }
     };
 
@@ -143,7 +144,7 @@ void optimize(vector<BasicBlock>& blocks)
             continue;
         }
         block.block = connect(block.exprVectorBefore(),
-                DAGToQuadTuple(optimizeOneBlock(block.exprVector()), block.curFun),
+                DAGToQuadTuple(optimizeOneBlock(block.exprVector(), block.curFun), block.curFun),
                 block.exprVectorAfter());
     }
 }
@@ -175,15 +176,20 @@ void test(vector<QuadTuple> quadVec)
     optimize(blocks);
     cout << blocks.size() << endl;
     int i = 0;
-    for(auto block: blocks) {
+    for(auto& block: blocks) {
         cout << "第" << i++ << "个基本块:" << endl;
         cout << "所属函数名：" << block.curFun << endl;
-        cout << "开始：" << block.start << " 结束：" << block.finish <<endl;
-
+        activeInfo(block);
 
         for(auto qt: block.block) {
-            qt.print();
+            qt.printWithAct();
         }
+    }
+    i = 0;
+    auto insts = geneASM(blocks);;
+    for(auto inst: insts) {
+        cout << i++;
+        inst.print();
     }
     /*
     for(auto s: a) {

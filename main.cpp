@@ -23,7 +23,7 @@ int main(void) {
     vector<Token> tokenVec;
     vector<QuadTuple> quadVec;
     Scanner sc(keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable, tokenVec, symbolTable);
-    sc.scan("src.txt");
+    sc.scan("../src.txt");
 //    sc.showLex();
 //    fclose(stdout);
 //    cout << tokenVec.size() << endl;
@@ -39,7 +39,7 @@ int main(void) {
     */
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
-    parse.print();
+    parse.print("../a.txt");
     int index = 0;
     for (auto &i : symbolTable.symbolTable) {
         cout << index++  << ":" << endl;
@@ -48,7 +48,7 @@ int main(void) {
             cout << j.name << " " << parse.toSymTypeName(j.type) << " 活跃: " << j.isActive << " 临时:" << j.isTemp << endl;
         }
     }
-//    test(quadVec);
+    test(quadVec);
     //cout << symbolTable.isTempName("t5", "main") << endl;
 
     return 0;

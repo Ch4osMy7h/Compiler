@@ -38,9 +38,6 @@ bool isOperator(string str)
 
 bool isTempName(string name, string curFun)
 {
-    if(!symbolTable.isTempName(name, curFun)) {
-        cout << name << "不是临时变量！" << endl;
-    }
     return symbolTable.isTempName(name, curFun);
 }
 
