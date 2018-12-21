@@ -24,14 +24,14 @@ private:
     StringTable& stringTable;
     vector<Token>& tokenVec;
     SymbolTable& symbolTable;
-    int CurLine = 1; //token所处行数
+    int curLine; //token所处行数
+    int curIndex;
 public:
     Scanner(KeyWordTable & kt, IdentiferTable& it, DelimiterTable& dt, IntTable & inta, FloatTable& ft, CharTable& ct, StringTable& st, vector<Token>& tokenVec, SymbolTable& syt);
-    void preProcess();
     void scan(string filename);
     void tokenGenerate(int state_before, string buffer);
     string encoder(int state);
-    void reset(FILE* fp, int& state, int& pos, string& buffer);
+    void reset(int& state, int& pos, string& buffer);
     void showLex(string filename);
     string numToName(int num);
 };
