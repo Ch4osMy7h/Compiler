@@ -973,6 +973,7 @@ void Parse::print(string filename) {
     if(!out) {
         cout << "Open QuadVec File Error" << endl;
     }
+    out << quadVec.size() << endl;
     for(auto &i: quadVec) {
         out << setw(8) << i.op << setw(8) << i.name1 << setw(8) << i.name2 << setw(8) << i.res << endl;
     }
