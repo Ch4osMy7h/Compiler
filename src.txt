@@ -1,8 +1,5 @@
 int main(){
     int a, b, x, y;
-    if(a + b < 10) {
-        a = 1;
-    }
+    x = a + b;
     return 0;
 }
-#

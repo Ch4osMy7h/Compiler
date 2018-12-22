@@ -50,3 +50,9 @@ void setActive(string name, string curFun, bool active)
 {
     symbolTable.setActive(name, curFun, active);
 }
+
+
+pair<bool, int> getAddrFromTable(string name, string curFun)
+{
+    return symbolTable.getAddr(name, curFun);
+}

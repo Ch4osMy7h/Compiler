@@ -51,6 +51,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     map<string, Position> posMap;
     vector<Instruction> instVec;
     instVec.emplace_back("SEGMENT", "", "", "DSEG");
+    instVec.emplace_back("DB", "0", "", "TEMP");//用来存临时变量
     instVec.emplace_back("ENDS", "", "", "DSEG");
     instVec.emplace_back("SEGMENT", "", "", "SSEG");
     instVec.emplace_back("DB", "100   DUP(0)", "", "STACK");
@@ -63,9 +64,22 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     stack<int> sem;//用来记录返填信息的
     int labelNow = 0; //用来记录当前label标号
 
-    auto saveR = [&](){
+    //获得某个变量的储存位置
+    auto getAddr = [&](string name, string curFun) -> string {
+        if(posMap[name].isMem) {
+            auto addr = getAddrFromTable(name, curFun);
+            if(addr.first) {
+                //如果此函数里没有此变量，是全局变量
+                return "STACK[" + to_string(addr.second) + "]";
+            } else {
+                return "[BP+" + to_string(addr.second) + "]";
+            }
+        } else {
+            return posMap[name].pos;
+        }
+    };
 
-    }
+    cout << "nimasile"<< getAddrFromTable("y", "main").second << endl;
 
         //找到一个空的通用寄存器
     auto findEmpty = [&]() -> string {
@@ -84,7 +98,8 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
             if(!pair.second.empty()) {
                 if(isActive(pair.second, curFun)) {
                     //保存活跃变量
-                    instVec.emplace_back("MOV", pair.second, pair.first);
+                    posMap[pair.second].isMem = true;
+                    instVec.emplace_back("MOV", getAddr(pair.second, curFun), pair.first);
                     RDL[pair.first].clear();
                 } else {
                     RDL[pair.first].clear();
@@ -104,22 +119,23 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                     //如果有空寄存器，就将当前存放B的寄存器的值移到那个空寄存器里
                     instVec.emplace_back("MOV", emptyR, posMap[qt.name1].pos);
                     RDL[emptyR] = qt.name1;//新找到的寄存器里放B
-                    R = posMap[qt.name1].pos; B = emptyR;
-                    if(qt.op != "=") C = posMap[qt.name2].pos;
+                    R = getAddr(qt.name1, curFun); B = emptyR;
+                    if(qt.op != "=") C = getAddr(qt.name2, curFun);
                     RDL[posMap[qt.name1].pos].clear();//此时map里的值还是之前B的储存地，将其清空
                     posMap[qt.name1] = Position(emptyR, false);
                 } else {
                     //如果没有，就加入内存里
-                    instVec.emplace_back("MOV", qt.name1, posMap[qt.name1].pos);
-                    R = posMap[qt.name1].pos; B = posMap[qt.name1].pos;
-                    if(qt.op != "=") C = posMap[qt.name2].pos;
+                    posMap[qt.name1].isMem = true;//先将其的储存地设为内存，让下一行的getAddr能获取它的内存地址
+                    instVec.emplace_back("MOV", getAddr(qt.name1, curFun), posMap[qt.name1].pos);
+                    R = posMap[qt.name1].pos; B = getAddr(qt.name1, curFun);
+                    if(qt.op != "=") C = getAddr(qt.name2, curFun);
                     RDL[posMap[qt.name1].pos].clear();
                     posMap[qt.name1] = Position(qt.name1, true);
                 }
             } else {
                 //否则（比如B不活跃）
-                R = posMap[qt.name1].pos; B = posMap[qt.name1].pos;
-                if(qt.op != "=") C = posMap[qt.name2].pos;
+                R = getAddr(qt.name1, curFun); B = getAddr(qt.name1, curFun);
+                if(qt.op != "=") C = getAddr(qt.name2, curFun);
                 RDL[posMap[qt.name1].pos].clear();
                 posMap[qt.name1] = Position(qt.name1, true);
             }
@@ -135,30 +151,31 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                     //如果有空寄存器，就将当前存放B的寄存器的值移到那个空寄存器里
                     instVec.emplace_back("MOV", emptyR, posMap[qt.name1].pos);
                     RDL[emptyR] = qt.name1;//新找到的寄存器里放B
-                    R = posMap[qt.name1].pos; B = emptyR;
-                    if(qt.op != "=") C = posMap[qt.name2].pos;
+                    R = getAddr(qt.name1, curFun); B = emptyR;
+                    if(qt.op != "=") C = getAddr(qt.name2, curFun);
                     RDL[posMap[qt.name1].pos].clear();//此时map里的值还是之前B的储存地，将其清空
                     posMap[qt.name1] = Position(emptyR, false);
                 } else {
                     //如果没有，就加入内存里
-                    instVec.emplace_back("MOV", qt.name1, posMap[qt.name1].pos);
-                    R = posMap[qt.name1].pos; B = posMap[qt.name1].pos;
-                    if(qt.op != "=") C = posMap[qt.name2].pos;
+                    posMap[qt.name1].isMem = true;//先将其的储存地设为内存，让下一行的getAddr能获取它的内存地址
+                    instVec.emplace_back("MOV", getAddr(qt.name1, curFun), posMap[qt.name1].pos);
+                    R = posMap[qt.name1].pos; B = getAddr(qt.name1, curFun);
+                    if(qt.op != "=") C = getAddr(qt.name2, curFun);
                     RDL[posMap[qt.name1].pos].clear();
                     posMap[qt.name1] = Position(qt.name1, true);
                 }
             } else {
                 //否则（比如B不活跃）
-                R = posMap[qt.name1].pos; B = posMap[qt.name1].pos;
-                if(qt.op != "=") C = posMap[qt.name2].pos;
+                R = getAddr(qt.name1, curFun); B = getAddr(qt.name1, curFun);
+                if(qt.op != "=") C = getAddr(qt.name2, curFun);
                 RDL[posMap[qt.name1].pos].clear();
                 posMap[qt.name1] = Position(qt.name1, true);
             }
         } else if(!findEmpty().empty()) {
             //如果以上两个条件都不满足，则选空闲者
             string emptyR = findEmpty();
-            R = emptyR; B = posMap[qt.name1].pos;
-            if(qt.op != "=") C = posMap[qt.name2].pos;
+            R = emptyR; B = getAddr(qt.name1, curFun);
+            if(qt.op != "=") C = getAddr(qt.name2, curFun);
         } else {
             //如果前三个情况都不满足，只能强制剥夺了，优先剥夺寄存器里不活跃的变量
             string obj = "";
@@ -183,8 +200,8 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
             instVec.emplace_back("MOV", obj, objPos);
             RDL[objPos].clear();
             posMap[obj] = Position(obj, true);
-            R = objPos; B = posMap[qt.name1].pos;
-            if(qt.op != "=") C = posMap[qt.name2].pos;
+            R = objPos; B = getAddr(qt.name1, curFun);
+            if(qt.op != "=") C = getAddr(qt.name2, curFun);
         }
     };
 
@@ -326,7 +343,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                     RDL["BL"].clear();
                     RDL["CL"].clear();
                     RDL["DL"].clear();
-                } else {5:2
+                } else {
                     instVec.emplace_back("MOV", "AL", posMap[qt.name1].pos);//将返回值暂存在AX中
                     instVec.emplace_back("RET", "", "");
                 }
