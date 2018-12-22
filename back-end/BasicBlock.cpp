@@ -16,7 +16,7 @@ vector<BasicBlock> generateBlocks(vector<QuadTuple>& ov)
             }
             curFunc = ov[i].name1;
         } else if(ov[i].op == "JMP" || ov[i].op == "ifbegin" || ov[i].op == "while"
-           || ov[i].op == "do" || ov[i].op == "else") {
+           || ov[i].op == "do" || ov[i].op == "else" || ov[i].op == "if") {
             //紧跟在转向语句后面的语句是入口语句
             leaders.insert(make_pair(i + 1, curFunc));
         } else if(ov[i].op == "LB" || ov[i].op == "ifend" || ov[i].op == "else" || ov[i].op == "while"
