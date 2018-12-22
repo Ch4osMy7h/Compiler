@@ -116,6 +116,9 @@ int Parse::varDeclaration() {
             arrayInfoEle.type = toType(curType);
             arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
             arrayInfoEle.clen = typeSize(curType);
+            for(int ind = arrayInfoEle.low ; ind <= arrayInfoEle.up; ind++) {
+                arrayInfoEle.activeMess.push_back(true);
+            }
             st.arrayTableVec.push_back(arrayInfoEle);
             st.symbolTable[curFun][symind].type = ARRAY;
             st.symbolTable[curFun][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
@@ -188,6 +191,9 @@ int Parse::varDeclarationList() {
                 arrayInfoEle.type = toType(curType);
                 arrayInfoEle.up = static_cast<unsigned int>(arrLen - 1);
                 arrayInfoEle.clen = typeSize(curType);
+                for(int ind = arrayInfoEle.low ; ind <= arrayInfoEle.up; ind++) {
+                    arrayInfoEle.activeMess.push_back(true);
+                }
                 st.arrayTableVec.push_back(arrayInfoEle);
                 st.symbolTable[curFun][symind].type = ARRAY;
                 st.symbolTable[curFun][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
@@ -850,12 +856,31 @@ int Parse::factor() {
 int Parse::call() {
     int index = curIndex;
     string curName;
+    bool output = false;
     if(tokenVec[curIndex].type == IDENTIFIER) {
         curName = tokenVec[curIndex].name;
+        if(curName == "output") output = true;
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
-            if(!st.getSymbolTableFuncName(curName)) {
+            if(!st.getSymbolTableFuncName(curName) && !output) {
                 cout << "函数未定义在第" << tokenVec[curIndex].line << "行" << endl;
+                exit(0);
+            }
+            if(output) curIndex++;
+            if(tokenVec[curIndex].type == IDENTIFIER && output) {
+                string outputName = tokenVec[curIndex].name;
+                curIndex++;
+                if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[")"] == tokenVec[curIndex].id) {
+                    quadVec.emplace_back("ouput", outputName, "__", "__");
+                    curIndex++;
+                    return 1;
+                } else {
+                    cout << tokenVec[curIndex].name << endl;
+                    cout << "输出函数调用缺少右括号在第" << tokenVec[curIndex].line << "行" << endl;
+                    exit(0);
+                }
+            } else if(output){
+                cout << "输出函数没有要输出的标识符" << endl;
                 exit(0);
             }
             quadVec.emplace_back("funcall", curName, "__", "__");
@@ -888,8 +913,6 @@ int Parse::call() {
         st.symbolTable[curFun][symInd].type = retunType;
         st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
         st.vallVec[curFun] += toType(toSymTypeName(retunType));
-
-
 
         return 1;
     }

@@ -22,6 +22,7 @@ enum Type {
 
 struct ArrayInfo {
     unsigned int low, up;
+    vector<bool > activeMess;
     Type type;
     unsigned int clen;
 };
@@ -101,6 +102,8 @@ public:
     int getFuncSize(string curFun);
     bool getSymbolTableFuncName(string name);   //
     pair<bool, int> getAddr(string name, string curFun); //当前作用域搜索函数
+    bool getArrayValActive(string name, int num, string curFun);  //得到数组元素活跃信息
+    void setArrayValActive(string name, int num, string curFun, bool active); //设置数组元素活跃信息
 
     SymbolTable() {
         //全局符号表初始化

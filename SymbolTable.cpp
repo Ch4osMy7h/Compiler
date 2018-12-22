@@ -146,10 +146,54 @@ int SymbolTable::getFuncSize(string curFun)
 }
 
 bool SymbolTable::getSymbolTableFuncName(string name) {
-    for(auto& i : symbolTable) {
-        if(i[0].name == name) {
-            return true;
+    if(funToName.count(name)) return true;
+    return false;
+}
+
+
+
+bool SymbolTable::getArrayValActive(string name, int num, string curFun) {
+    int index = funToName[curFun];
+    for (auto &i : symbolTable[index]) {
+        if(i.name == name) {
+            if(num > arrayTableVec[i.aiInd].up) {
+                cout << "出现数组越界" << endl;
+                exit(0);
+            }
+            return arrayTableVec[i.aiInd].activeMess[num];
+        }
+    }
+    for (auto &i : symbolTable[0]) {
+        if(i.name == name) {
+            if(num > arrayTableVec[i.aiInd].up) {
+                cout << "出现数组越界" << endl;
+                exit(0);
+            }
+            return arrayTableVec[i.aiInd].activeMess[num];
         }
     }
     return false;
 }
+
+void SymbolTable::setArrayValActive(string name, int num, string curFun, bool active) {
+    int index = funToName[curFun];
+    for (auto &i : symbolTable[index]) {
+        if(i.name == name) {
+            if(num > arrayTableVec[i.aiInd].up) {
+                cout << "出现数组越界" << endl;
+                exit(0);
+            }
+           arrayTableVec[i.aiInd].activeMess[num] = active;
+        }
+    }
+    for (auto &i : symbolTable[0]) {
+        if(i.name == name) {
+            if(num > arrayTableVec[i.aiInd].up) {
+                cout << "出现数组越界" << endl;
+                exit(0);
+            }
+            arrayTableVec[i.aiInd].activeMess[num] = active;
+        }
+    }
+}
+

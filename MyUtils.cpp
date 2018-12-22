@@ -38,16 +38,27 @@ bool isOperator(string str)
 
 bool isTempName(string name, string curFun)
 {
+    if(name.find('[') != string::npos) {
+        return false;
+    }
     return symbolTable.isTempName(name, curFun);
 }
 
 bool isActive(string name, string curFun)
 {
+    if(name.find('[') != string::npos) {
+        auto pair = splitArray(name);
+        return symbolTable.getArrayValActive(pair.first, pair.second, curFun);
+    }
     return symbolTable.isActive(name, curFun);
 }
 
 void setActive(string name, string curFun, bool active)
 {
+    if(name.find('[') != string::npos) {
+        auto pair = splitArray(name);
+        symbolTable.setArrayValActive(pair.first, pair.second, curFun, active);
+    }
     symbolTable.setActive(name, curFun, active);
 }
 
@@ -65,6 +76,7 @@ int getFuncSize(string curFun)
 
 bool isGlobalName(string name, string curFun)
 {
+
     return symbolTable.getAddr(name, curFun).first;
 }
 
@@ -78,4 +90,9 @@ pair<string, int> splitArray(string name)
     is >> num;
     return make_pair(str, num);
 }
+
+
+
+
+
 
