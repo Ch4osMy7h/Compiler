@@ -79,8 +79,6 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
         }
     };
 
-    cout << "nimasile"<< getAddrFromTable("y", "main").second << endl;
-
         //找到一个空的通用寄存器
     auto findEmpty = [&]() -> string {
         if (RDL["BL"].empty())
