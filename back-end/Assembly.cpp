@@ -67,14 +67,26 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     int nowBP = getFuncSize("");
     int nowPara = 2;//记录当前传入的参数的位置
 
+
+
     //获得某个变量的储存位置
     auto getAddr = [&](string name, string curFun) -> string {
+        if(isNum(name)) {
+            //常数直接返回值
+            return name;
+        } else if(name.find('[') != -1) {
+            //是数组值的情况
+            auto pair = splitArray(name);
+            auto addr = getAddrFromTable(pair.first, curFun);
+            if(addr.first) {
+                //如果此函数里没有此变量，是全局变量
+                return "BYTE PTR AR[" + to_string(addr.second + pair.second) + "]";
+            } else {
+                return "BYTE PTR [BP+" + to_string(addr.second + pair.second) + "]";
+            }
+        }
         if(posMap[name].isMem) {
             auto addr = getAddrFromTable(name, curFun);
-            if(addr.second == -1) {
-                //是常数的情况
-                return name;
-            }
             if(addr.first) {
                 //如果此函数里没有此变量，是全局变量
                 return "BYTE PTR AR[" + to_string(addr.second) + "]";
@@ -85,6 +97,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
             return posMap[name].pos;
         }
     };
+
 
         //找到一个空的通用寄存器
     auto findEmpty = [&]() -> string {
@@ -101,7 +114,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     auto saveR = [&](string curFun) {
         for(auto pair: RDL) {
             if(!pair.second.empty()) {
-                if(isActive(pair.second, curFun) || isGlobalName(pair.second, curFun)) {
+                if(isActive(pair.second, curFun)) {
                     //保存活跃变量
                     posMap[pair.second].isMem = true;
                     instVec.emplace_back("MOV", getAddr(pair.second, curFun), pair.first);
@@ -356,7 +369,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                     RDL["CL"].clear();
                     RDL["DL"].clear();
                 } else {
-                    instVec.emplace_back("MOV", "AL", posMap[qt.name1].pos);//将返回值暂存在AL中
+                    instVec.emplace_back("MOV", "AL", getAddr(qt.name1, block.curFun));//将返回值暂存在AL中
                     instVec.emplace_back("RET", "", "");
                 }
             } else if(qt.op == "funcall") {

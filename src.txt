@@ -1,31 +1,17 @@
-int a,b,c,d;
-
-/*int c;*/
-int gcd(int u,int v){
-    if (v==0) return u;
-    else return gcd(v,u-(u/v)*v);
+int dsad(int a) {
+    int b[10];
+    b[1] = 10;
+    if(a > 10) {
+        return b[2];
+    } else {
+        return b[3];
+    }
 }
 
-int add(int x,int y){
-    int z;
-    z=x+y;
-    return z;
-}
 int main(){
-    int b,c,de;
     int a;
-    char d;
-    int x;
-    int y;
-    int t;
-    int s[10];
-    a=b=4;
-    x=3;
-    t=a;
-    x = (a+b)*(a+b+1)-c;
-    y=10;
-    gcd(a,b);
-    y = a + add( add(x,y) ,y);
-    if (a>b) a=b+1*a;
-    else b=t;
+    int b;
+    a = 3;
+    b = dsad(a);
+    return 0;
 }

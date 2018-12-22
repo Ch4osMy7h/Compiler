@@ -22,7 +22,7 @@ void setActive(string name, string curFun, bool active); //设置活跃信息
 pair<bool, int> getAddrFromTable(string name, string curFun);
 int getFuncSize(string curFun);
 bool isGlobalName(string name, string curFun);
-
+pair<string, int> splitArray(string name);
 string calculateNum(string op, string a, string b);
 
 #endif //COMPILER_MYUTILS_H
