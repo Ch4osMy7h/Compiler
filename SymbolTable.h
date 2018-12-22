@@ -103,6 +103,7 @@ public:
 
     SymbolTable() {
         //全局符号表初始化
+
         vector<SymbolTableElement> allScopeVar;
         symbolTable.push_back(allScopeVar);
         funToName["allScopeVar"] = 0;

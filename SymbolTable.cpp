@@ -113,6 +113,7 @@ void SymbolTable::setActive(string name, string curFun, bool active) {
 //    cout << "未找到该变量" << endl;
 }
 
+
 pair<bool, int> SymbolTable::getAddr(string name, string curFun) {
     int index = funToName[curFun];
     pair<bool , int> res;   // bool 代表是否全局区， int代表相对地址
