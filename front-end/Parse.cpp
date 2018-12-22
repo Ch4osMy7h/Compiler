@@ -28,7 +28,6 @@ Parse::Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &s
     this->curFun = 0;
     this->paraNum = 0;
     this->funCnt = 0;
-    this->vall = 0;
 }
 
 int Parse::program() {
@@ -286,10 +285,7 @@ int Parse::funDeclaration() {
             st.symbolTable[curFun][symInd].cat = Category ::FORMALPARAM;
             st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
             st.vallVec[curFun] += typeSize(*iter_type);
-
-
-            vall += typeSize(*iter_type);
-//            st.symbolTable[curFun][symInd].vall = 0;
+            //            st.symbolTable[curFun][symInd].vall = 0;
             quadVec.emplace_back("paradef", *iter_type, *iter_name, "__");
             iter_type++; iter_name++;
         }

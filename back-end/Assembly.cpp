@@ -13,8 +13,8 @@ void activeInfo(BasicBlock &block)
             continue;
         }
         setActive(block.block[i].res, block.curFun, !isTempName(block.block[i].res, block.curFun));
-        setActive(block.block[i].name1, block.curFun, !isTempName(block.block[i].name1, block.curFun));
-        setActive(block.block[i].name2, block.curFun, !isTempName(block.block[i].name2, block.curFun));
+        setActive(block.block[i].name1, block.curFun, !isTempName(block.block[i].res, block.curFun));
+        setActive(block.block[i].name2, block.curFun, !isTempName(block.block[i].res, block.curFun));
     }
 
     for(int i = block.block.size() - 1; i >= 0; i--) {
@@ -54,7 +54,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     instVec.emplace_back("DB", "0", "", "TEMP");//用来存临时变量
     instVec.emplace_back("ENDS", "", "", "DSEG");
     instVec.emplace_back("SEGMENT", "", "", "SSEG");
-    instVec.emplace_back("DB", "100   DUP(0)", "", "STACK");
+    instVec.emplace_back("DB", "100   DUP(0)", "", "AR");//活动记录所在的栈区域
     instVec.emplace_back("ENDS", "", "", "SSEG");
     instVec.emplace_back("SEGMENT", "", "", "CSEG");
     instVec.emplace_back("ASSUME", "CS:CSEG", "", "");
@@ -63,16 +63,23 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
 
     stack<int> sem;//用来记录返填信息的
     int labelNow = 0; //用来记录当前label标号
+    string nextFunc; //用来记录即将调用的函数名
+    int nowBP = getFuncSize("");
+    int nowPara = 2;//记录当前传入的参数的位置
 
     //获得某个变量的储存位置
     auto getAddr = [&](string name, string curFun) -> string {
         if(posMap[name].isMem) {
             auto addr = getAddrFromTable(name, curFun);
+            if(addr.second == -1) {
+                //是常数的情况
+                return name;
+            }
             if(addr.first) {
                 //如果此函数里没有此变量，是全局变量
-                return "STACK[" + to_string(addr.second) + "]";
+                return "BYTE PTR AR[" + to_string(addr.second) + "]";
             } else {
-                return "[BP+" + to_string(addr.second) + "]";
+                return "BYTE PTR [BP+" + to_string(addr.second) + "]";
             }
         } else {
             return posMap[name].pos;
@@ -94,7 +101,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     auto saveR = [&](string curFun) {
         for(auto pair: RDL) {
             if(!pair.second.empty()) {
-                if(isActive(pair.second, curFun)) {
+                if(isActive(pair.second, curFun) || isGlobalName(pair.second, curFun)) {
                     //保存活跃变量
                     posMap[pair.second].isMem = true;
                     instVec.emplace_back("MOV", getAddr(pair.second, curFun), pair.first);
@@ -214,6 +221,11 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                 posMap[qt.name1] = Position(qt.name1, true);
                 if(qt.name2 != "__") posMap[qt.name2] = Position(qt.name2, true);
                 posMap[qt.res] = Position(qt.res, true);
+            } else if(qt.op == "paramin") {
+                posMap[qt.name1] = Position(qt.name1, true);
+            } else if(qt.op == "callend") {
+                posMap[qt.res] = Position(qt.name1, true);
+
             }
         }
         for(auto qt: block.block) {
@@ -323,6 +335,8 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                     instVec.emplace_back("MOV", "DS", "AX");
                     instVec.emplace_back("MOV", "AX", "SSEG");
                     instVec.emplace_back("MOV", "SS", "AX");
+                    instVec.emplace_back("MOV", "SI", "0");
+                    instVec.emplace_back("MOV", "BP", to_string(nowBP));//BP首先指向Main函数底部
                 } else {
                     instVec.emplace_back("PROC", "NEAR", "", block.curFun);
                 }
@@ -342,9 +356,23 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                     RDL["CL"].clear();
                     RDL["DL"].clear();
                 } else {
-                    instVec.emplace_back("MOV", "AL", posMap[qt.name1].pos);//将返回值暂存在AX中
+                    instVec.emplace_back("MOV", "AL", posMap[qt.name1].pos);//将返回值暂存在AL中
                     instVec.emplace_back("RET", "", "");
                 }
+            } else if(qt.op == "funcall") {
+                nextFunc = qt.name1;
+                nowPara = 2;//偏移地址为0,1的地方是上一层的BP位置
+            } else if(qt.op == "paramin") {
+                instVec.emplace_back("MOV", "AL", getAddr(qt.name1, block.curFun));//将参数暂时放在AL中
+                instVec.emplace_back("MOV", "[BP+" + to_string(getFuncSize(block.curFun) + nowPara++)
+                                                    + "]", "AL");//将AL里的暂存参数存入新的活动记录的对应位置
+            } else if(qt.op == "callend") {
+                //参数传递完毕，只要保存原始BP，修改新的BP，并CALL，改回原来的BP，再取回返回值即可
+                instVec.emplace_back("MOV", "[BP+" + to_string(getFuncSize(block.curFun)) + "]", "BP");//将当前BP存放在新的活动记录的底部
+                instVec.emplace_back("ADD", "BP", to_string(getFuncSize(block.curFun)));//将BP改成新的活动记录的底部
+                instVec.emplace_back("CALL", nextFunc, "");
+                instVec.emplace_back("MOV", "BP", "[BP]");//将BP改回之前的活动记录底部
+                instVec.emplace_back("MOV", getAddr(qt.res, block.curFun), "AL");//取回返回值
             }
         }
     }

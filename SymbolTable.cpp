@@ -126,4 +126,10 @@ pair<bool, int> SymbolTable::getAddr(string name, string curFun) {
             return res;
         }
     }
+    return make_pair(false, -1);
+}
+
+int SymbolTable::getFuncSize(string curFun)
+{
+    return curFun.empty() ? vallVec[0] : vallVec[funToName[curFun]];
 }
