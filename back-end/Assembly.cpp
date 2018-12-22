@@ -44,14 +44,30 @@ void activeInfo(BasicBlock &block)
 
 vector<Instruction> geneASM(vector<BasicBlock> &blocks)
 {
-    //没有AL是因为为了方便，AX寄存器保留作为乘除法运算单元
+    //没有AL是因为为了方便，AX寄存器保留作为乘除法运算单元与返回值保存寄存器
     map<string, string> RDL = {make_pair("BL", ""),
                                make_pair("CL", ""),
                                make_pair("DL", "")};
     map<string, Position> posMap;
     vector<Instruction> instVec;
-    stack<int> sem;//用来记录返填信息的
+    instVec.emplace_back("SEGMENT", "", "", "DSEG");
+    instVec.emplace_back("ENDS", "", "", "DSEG");
+    instVec.emplace_back("SEGMENT", "", "", "SSEG");
+    instVec.emplace_back("DB", "100   DUP(0)", "", "STACK");
+    instVec.emplace_back("ENDS", "", "", "SSEG");
+    instVec.emplace_back("SEGMENT", "", "", "CSEG");
+    instVec.emplace_back("ASSUME", "CS:CSEG", "", "");
+    instVec.emplace_back("ASSUME", "DS:DSEG", "", "");
+    instVec.emplace_back("ASSUME", "SS:SSEG", "", "");
 
+    stack<int> sem;//用来记录返填信息的
+    int labelNow = 0; //用来记录当前label标号
+
+    auto saveR = [&](){
+
+    }
+
+        //找到一个空的通用寄存器
     auto findEmpty = [&]() -> string {
         if (RDL["BL"].empty())
             return "BL";
@@ -173,6 +189,7 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
     };
 
     for(auto block: blocks) {
+        string cmpType;//存放生成cmp指令对应的是小于还是等于还是大于，用于下一次编写if和do的跳转指令
         saveR(block.curFun);
         activeInfo(block);
         posMap.clear();
@@ -217,10 +234,13 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                             instVec.emplace_back("DIV", C, "");
                         }
                         instVec.emplace_back("MOV", R, "AL");
-                    } else {
-                        //其他运算没有任何限制
-
-                        instVec.emplace_back(qt.op, R, C);
+                    } else if(qt.op == "+") {
+                        instVec.emplace_back("ADD", R, C);
+                    } else if(qt.op == "-") {
+                        instVec.emplace_back("SUB", R, C);
+                    } else if(qt.op == "==" || qt.op == ">" || qt.op == "<") {
+                        instVec.emplace_back("CMP", R, C);
+                        cmpType = qt.op;
                     }
                     posMap[qt.res] = Position(R, false);
                     RDL[R] = qt.res;
@@ -228,7 +248,13 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
             } else if (qt.op == "ifbegin") {
                 //如果是跳转语句，因为跳转语句需要判断的对象必然刚计算完毕，故可以用标志转移指令进行跳转
                 saveR(block.curFun);
-                instVec.emplace_back("JZ", "", "");//需要返填q
+                if(cmpType == "<") {
+                    instVec.emplace_back("JAE", "", "");//如果B实际上大于等于C，那么就跳到else
+                } else if(cmpType == ">") {
+                    instVec.emplace_back("JBE", "", "");//如果B实际上小于等于C，那么就跳到else
+                } else if(cmpType == "==") {
+                    instVec.emplace_back("JNE", "", "");//如果B实际上不等于C，那么就跳到else
+                }
                 sem.push(instVec.size() - 1);
             } else if (qt.op == "else") {
                 //同时为跳转指令和跳转目标
@@ -236,19 +262,31 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                 instVec.emplace_back("JMP", "", "");//无条件跳到endif之后，需要返填
                 int pos = sem.top();//获取到需要返填的位置
                 sem.pop();
-                instVec[pos].name1 = to_string(instVec.size());//将JMP的下一条返填进去
                 sem.push(instVec.size() - 1);
+                instVec[pos].name1 = "LABEL" + to_string(labelNow);//将JMP的下一条返填进去
+                instVec.emplace_back("", "", "", "LABEL" + to_string(labelNow) + ":");
+                labelNow++;
             } else if (qt.op == "ifend") {
                 saveR(block.curFun);
                 int pos = sem.top();
                 sem.pop();
-                instVec[pos].name1 = to_string(instVec.size());
+                instVec[pos].name1 = "LABEL" + to_string(labelNow);//将JMP的下一条返填进去
+                instVec.emplace_back("", "", "", "LABEL" + to_string(labelNow)  + ":");
+                labelNow++;
             } else if (qt.op == "while") {
                 //为whileend以后回到开始重新判断条件保存下一条语句位置
                 sem.push(instVec.size());
+                instVec.emplace_back("", "", "", "LABEL" + to_string(labelNow)  + ":");
+                labelNow++;
             } else if (qt.op == "do") {
                 saveR(block.curFun);
-                instVec.emplace_back("JZ", "", "");//需要返填q
+                if(cmpType == "<") {
+                    instVec.emplace_back("JAE", "", "");//如果B实际上大于等于C，那么就跳到whileend
+                } else if(cmpType == ">") {
+                    instVec.emplace_back("JBE", "", "");//如果B实际上小于等于C，那么就跳到whileend
+                } else if(cmpType == "==") {
+                    instVec.emplace_back("JNE", "", "");//如果B实际上不等于C，那么就跳到whileend
+                }
                 sem.push(instVec.size() - 1);
             } else if (qt.op == "whileend") {
                 saveR(block.curFun);
@@ -256,10 +294,42 @@ vector<Instruction> geneASM(vector<BasicBlock> &blocks)
                 int temp = instVec.size() - 1;//上一行加入的语句的位置
                 int pos = sem.top();
                 sem.pop();
-                instVec[pos].name1 = to_string(instVec.size());
+                instVec[pos].name1 = "LABEL" + to_string(labelNow);//将JMP的下一条返填进去
+                instVec.emplace_back("", "", "", "LABEL" + to_string(labelNow)  + ":");
+                labelNow++;
                 pos = sem.top();
                 sem.pop();
-                instVec[temp].name1 = to_string(pos);
+                instVec[temp].name1 = instVec[pos].label;
+            } else if(qt.op == "fundef") {
+                if(block.curFun == "main") {
+                    //遇到主函数的时候，将其设为程序的入口
+                    instVec.emplace_back("" , "", "", "MAIN:");
+                    instVec.emplace_back("MOV", "AX", "DSEG");
+                    instVec.emplace_back("MOV", "DS", "AX");
+                    instVec.emplace_back("MOV", "AX", "SSEG");
+                    instVec.emplace_back("MOV", "SS", "AX");
+                } else {
+                    instVec.emplace_back("PROC", "NEAR", "", block.curFun);
+                }
+            } else if(qt.op == "funend") {
+                if(block.curFun == "main") {
+                    instVec.emplace_back("ENDS", "", "", "CSEG");
+                    instVec.emplace_back("END", "MAIN", "");
+                } else {
+                    instVec.emplace_back("ENDP", "", "", block.curFun);
+
+                }
+            } else if(qt.op == "return") {
+                if(block.curFun == "main") {
+                    instVec.emplace_back("MOV", "AH", "4CH");
+                    instVec.emplace_back("INT", "21H", "");
+                    RDL["BL"].clear();
+                    RDL["CL"].clear();
+                    RDL["DL"].clear();
+                } else {5:2
+                    instVec.emplace_back("MOV", "AL", posMap[qt.name1].pos);//将返回值暂存在AX中
+                    instVec.emplace_back("RET", "", "");
+                }
             }
         }
     }

@@ -40,7 +40,7 @@ vector<DAGNode> optimizeOneBlock(vector<QuadTuple> quadVector, string curFunc)
 {
     vector<DAGNode> nodes;
     map<string, int> defineMap;
-    //用来在nodes和defineMap里增加新的叶节点的functor, 返回插入的元素的位置的迭代器
+    //用来在nodes和defineMap里增加新的叶节点的函数, 返回插入的元素的位置的迭代器
     auto addLeafNode = [&](string name) {
         DAGNode tempNode(nodes.size(), name);
         defineMap[name] = nodes.size();
@@ -48,7 +48,7 @@ vector<DAGNode> optimizeOneBlock(vector<QuadTuple> quadVector, string curFunc)
         return nodes.size() - 1;
     };
 
-    //用来处理与四元式的res字段相关事宜的functor
+    //用来处理与四元式的res字段相关事宜的函数
     auto defineRes = [&](string res, int n) {
         if(defineMap.find(res) != defineMap.end()) {
             //res未定义过节点，将res附加在位置为n的附加标记上
@@ -185,10 +185,8 @@ void test(vector<QuadTuple> quadVec)
             qt.printWithAct();
         }
     }
-    i = 0;
     auto insts = geneASM(blocks);;
     for(auto inst: insts) {
-        cout << i++;
         inst.print();
     }
     /*

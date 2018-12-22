@@ -8,13 +8,21 @@
 #include <array>
 struct Instruction
 {
-    int pos;
+    string label;
     string op;
     string name1;
     string name2;
-    Instruction(string op, string name1, string name2): op(op), name1(name1), name2(name2) {}
+    Instruction(string op, string name1, string name2, string label): op(op), name1(name1), name2(name2), label(label)  {}
+    Instruction(string op, string name1, string name2): op(op), name1(name1), name2(name2), label()  {}
     Instruction() = default;
-    void print() {cout << setw(8) << op << setw(8) << name1 << setw(8) << name2 << endl;}
+    void print() {
+        cout.setf(std::ios::left);
+        cout << setw(8) << label;
+        if(name2.empty())
+            cout << setw(8) << op << setw(8) << name1 << endl;
+        else
+            cout << setw(8) << op << setw(8) << name1 + "," << setw(8) << name2 << endl;
+    }
 };
 
 //用来指示存放位置的结构体
