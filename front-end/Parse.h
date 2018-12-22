@@ -116,6 +116,9 @@ public:
     Type typeSwitch(Type type, Type addType);
 
     int varDeclarationList();
+    string toCatName(Category cat);
+
+
 };
 
 

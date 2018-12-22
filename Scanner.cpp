@@ -31,9 +31,8 @@ void Scanner::scan(string filename) {
 
     while (curIndex != text.size()) {
         curChar = text[curIndex++];
-
-
         if (comment && curChar != '*') {
+            if(curChar == '\n') curLine++;
             continue;
         } else if (curChar == '*' && comment) {
             curChar = text[curIndex++];
@@ -47,8 +46,8 @@ void Scanner::scan(string filename) {
         }
         //跳过空格 换行符 \t 以及回车
         if (curChar == '\n' || curChar == '\t' || curChar == ' ' || curChar == '\r') {
-            tokenGenerate(state, buffer);
             if (curChar == '\n') curLine++;
+            tokenGenerate(state, buffer);
             buffer = "";
             state = 1;
             continue;
@@ -183,7 +182,7 @@ void Scanner::showLex(string filename) {
     }
     out << tokenVec.size() << endl;
     for(auto val : tokenVec) {
-        out << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.id <<  endl;
+        out << setw(10) << val.name << setw(10) << numToName(val.type) << setw(10) << val.line <<  endl;
     }
     out.close();
     out.clear();

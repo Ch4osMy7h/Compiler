@@ -58,14 +58,17 @@ int main(int argc, char* argv[]) {
     parse.parse();
     parse.print(outputQuadDir);
 
-//    symbolTable.print();
-//    for (auto &i : symbolTable.symbolTable) {
-//        cout << index++  << ":" << endl;
-//        for (auto &j : i) {
-//            if(j.name == "a") cout << j.type << endl;
-//            cout << j.name << " " << parse.toSymTypeName(j.type) << "地址" << j.vall <<" 活跃: " << j.isActive << " 临时:" << j.isTemp << endl;
-//        }
-//    }
+    symbolTable.print();
+    int index = 0;
+    int cur;
+    for (auto &i : symbolTable.symbolTable) {
+        cout << index++  << ":" << endl;
+        cur = 0;
+        for (auto &j : i) {
+            if(j.name == "a") cout << j.type << endl;
+            cout << ++cur << "\t" << j.name << "\t" << parse.toSymTypeName(j.type) <<  "\t" <<  parse.toCatName(j.cat) << "\t" << j.vall<< endl;
+        }
+    }
 //    test(quadVec);
     //cout << symbolTable.isTempName("t5", "main") << endl;
 //    cout << symbolTable.getAddr("a", "main").first << " " << symbolTable.getAddr("a", "main").second << endl;

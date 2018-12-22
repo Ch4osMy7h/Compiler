@@ -343,6 +343,8 @@ int Parse::param() {
             curName = tokenVec[curIndex].name;
             curIndex++;
         } else {
+            if(curType == "void")
+                return 1;
             cout << "类型声明后必须跟着标识符在第" << tokenVec[curIndex].line << "行" << endl;
             exit(0);
         }
@@ -852,6 +854,10 @@ int Parse::call() {
         curName = tokenVec[curIndex].name;
         curIndex++;
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index["("] == tokenVec[curIndex].id) {
+            if(!st.getSymbolTableFuncName(curName)) {
+                cout << "函数未定义在第" << tokenVec[curIndex].line << "行" << endl;
+                exit(0);
+            }
             quadVec.emplace_back("funcall", curName, "__", "__");
             curIndex++;
             if(args()) {
@@ -1012,6 +1018,18 @@ Type Parse::typeSwitch(Type left, Type right) {
     }
     if(left == Type::INT || right == Type::INT) {
         return Type::INT;
+    }
+}
+
+string Parse::toCatName(Category cat) {
+    if(cat == Category::VARIABLE) {
+        return "var";
+    } else if(cat == Category::FORMALPARAM) {
+        return "vf";
+    } else if(cat == Category::FUNCTION) {
+        return "func";
+    } else if(cat == Category::CONST) {
+        return "const";
     }
 }
 

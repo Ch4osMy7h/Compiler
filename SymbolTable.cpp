@@ -144,3 +144,12 @@ int SymbolTable::getFuncSize(string curFun)
 {
     return curFun.empty() ? vallVec[0] : vallVec[funToName[curFun]];
 }
+
+bool SymbolTable::getSymbolTableFuncName(string name) {
+    for(auto& i : symbolTable) {
+        if(i[0].name == name) {
+            return true;
+        }
+    }
+    return false;
+}
