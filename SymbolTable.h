@@ -69,7 +69,7 @@ struct SymbolTableElement {
     int ctInd;  //常数表index
     int len;    //长度表
     int aiInd;  //数组表index
-    int vall;   //值单元分配
+    int vall = 0;   //值单元分配
     int pfinalind; //如果是函数就给他分配函数表
     double constNum; //if这是个const
     bool isTemp; //临时变量
@@ -83,12 +83,12 @@ struct SymbolTableElement {
 class SymbolTable {
 public:
     int curSymInd = 0;
-    //全局变量就用0对应的symbolTable
+    //全局变量就用0发对应的symbolTable
     vector<vector<SymbolTableElement>> symbolTable; //符号表总表
     vector<FunctionTable> functionTableVec;
     vector<ArrayInfo> arrayTableVec;
     map<string, int> funToName; //函数名映射 到 符号表
-
+    vector<int> vallVec; //每个函数空间此时分配的值单元地址
 
 
     int searchSymbolName(string name, int curInd);
@@ -99,12 +99,12 @@ public:
     bool isActive(string name,string curFun); //判断是否活跃
     void setActive(string name, string curFun, bool active); //设置活跃信息
 
-
     SymbolTable() {
         //全局符号表初始化
         vector<SymbolTableElement> allScopeVar;
         symbolTable.push_back(allScopeVar);
         funToName["allScopeVar"] = 0;
+        vallVec.push_back(0);
     }
 
 };

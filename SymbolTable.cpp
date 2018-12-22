@@ -11,7 +11,11 @@ void SymbolTable::print() {
     cout << "====================================" << endl;
     cout << "             SymbolTable            " << endl;
     cout << "====================================" << endl;
-    cout << "ID\tName\tType\tCat\tAddr" << endl;
+    for (auto &i : symbolTable) {
+        for (auto &j : i) {
+            cout << j.name << "\t" << j.type << "\t" << j.vall << endl;
+        }
+    }
 }
 
 
