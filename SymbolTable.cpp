@@ -95,6 +95,11 @@ bool SymbolTable::isActive(string name, string curFun) {
             return i.isActive;
         }
     }
+    for (auto &i : symbolTable[0]) {
+        if(i.name == name) {
+            return i.isActive;
+        }
+    }
 
 //    cout << "未找到该变量" << endl;
     return false;
@@ -103,6 +108,11 @@ bool SymbolTable::isActive(string name, string curFun) {
 void SymbolTable::setActive(string name, string curFun, bool active) {
     int index = funToName[curFun];
     for (auto &i : symbolTable[index]) {
+        if(i.name == name) {
+            i.isActive = active;
+        }
+    }
+    for (auto &i : symbolTable[0]) {
         if(i.name == name) {
             i.isActive = active;
         }
