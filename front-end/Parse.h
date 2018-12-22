@@ -38,7 +38,6 @@ private:
     int paraNum; //记录参数个数
     vector<string> paramType;
     vector<string> paramName;
-
     //函数调用传入参数
     vector<string> paramCall;
     //用于赋值表达式的生成

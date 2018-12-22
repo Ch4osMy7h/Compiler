@@ -110,7 +110,6 @@ void SymbolTable::setActive(string name, string curFun, bool active) {
             i.isActive = active;
         }
     }
-//    cout << "未找到该变量" << endl;
 }
 
 

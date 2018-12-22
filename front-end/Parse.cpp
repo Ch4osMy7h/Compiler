@@ -128,7 +128,6 @@ int Parse::varDeclaration() {
             quadVec.emplace_back("vardef", curName, curType, "--");
             st.symbolTable[curFun][symind].type = toType(curType);
             st.symbolTable[curFun][symind].vall = st.vallVec[curFun];
-
             st.vallVec[curFun] += typeSize(curType);
         }
         varDeclarationList();
