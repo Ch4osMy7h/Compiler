@@ -38,9 +38,6 @@ bool isOperator(string str)
 
 bool isTempName(string name, string curFun)
 {
-    if(!symbolTable.isTempName(name, curFun)) {
-        cout << name << "不是临时变量！" << endl;
-    }
     return symbolTable.isTempName(name, curFun);
 }
 
@@ -52,4 +49,10 @@ bool isActive(string name, string curFun)
 void setActive(string name, string curFun, bool active)
 {
     symbolTable.setActive(name, curFun, active);
+}
+
+
+pair<bool, int> getAddrFromTable(string name, string curFun)
+{
+    return symbolTable.getAddr(name, curFun);
 }

@@ -34,7 +34,6 @@ private:
     int funCnt;
     int curSymInd;
     string curType;
-    int vall;
     int paraNum; //记录参数个数
     vector<string> paramType;
     vector<string> paramName;
