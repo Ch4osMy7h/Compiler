@@ -28,7 +28,6 @@ Parse::Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &s
     this->curFun = 0;
     this->paraNum = 0;
     this->funCnt = 0;
-    this->vall = 0;
 }
 
 int Parse::program() {
@@ -121,15 +120,12 @@ int Parse::varDeclaration() {
             st.symbolTable[curFun][symind].type = ARRAY;
             st.symbolTable[curFun][symind].aiInd = static_cast<int>(st.arrayTableVec.size() - 1);
             st.symbolTable[curFun][symind].len = arrayInfoEle.clen * arrLen;
-            st.symbolTable[curFun][symind].vall = st.vallVec[curFun];
-            st.symbolTable[curFun][symind].vall = st.vallVec[curFun];
-            st.vallVec[curFun] += arrayInfoEle.clen * arrLen;
         }else {
             quadVec.emplace_back("vardef", curName, curType, "--");
             st.symbolTable[curFun][symind].type = toType(curType);
-            st.symbolTable[curFun][symind].vall = st.vallVec[curFun];
-
-            st.vallVec[curFun] += typeSize(curType);
+            /*
+             * vall
+             */
         }
         varDeclarationList();
         return 1;
@@ -197,8 +193,9 @@ int Parse::varDeclarationList() {
             }else {
                 quadVec.emplace_back("vardef", curName, curType, "--");
                 st.symbolTable[curFun][symind].type = toType(curType);
-                st.symbolTable[curFun][symind].vall = st.vallVec[curFun];
-                st.vallVec[curFun] += typeSize(curType);
+                /*
+                 * vall
+                 */
             }
             varDeclarationList();
     } else if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
@@ -268,7 +265,7 @@ int Parse::funDeclaration() {
         st.symbolTable[curFun][0].type = toType(curType);
         st.symbolTable[curFun][0].cat = Category ::FUNCTION;
         st.funToName[curName] = curFun; //函数名映射
-        st.vallVec.push_back(2);
+
 
 
 //        st.tokenTable[curSymInd].name = curName;
@@ -285,11 +282,6 @@ int Parse::funDeclaration() {
             st.symbolTable[curFun][symInd].name = *iter_name;
             st.symbolTable[curFun][symInd].type = toType(*iter_type);
             st.symbolTable[curFun][symInd].cat = Category ::FORMALPARAM;
-            st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
-            st.vallVec[curFun] += typeSize(*iter_type);
-
-
-            vall += typeSize(*iter_type);
 //            st.symbolTable[curFun][symInd].vall = 0;
             quadVec.emplace_back("paradef", *iter_type, *iter_name, "__");
             iter_type++; iter_name++;
@@ -652,8 +644,6 @@ int Parse::simpleExpression() {
                 st.symbolTable[curFun][symInd].cat = Category ::CONST;
                 st.symbolTable[curFun][symInd].isTemp = true;
                 st.symbolTable[curFun][symInd].isActive = false;
-                st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
-                st.vallVec[curFun] += 1;
                 expName = curTmpName;
             } else {
                 cout << "表达式错误" << endl;
@@ -707,12 +697,9 @@ int Parse::additiveExpression() {
             auto symInd = st.symbolTable[curFun].size() - 1;
             st.symbolTable[curFun][symInd].name = curTmpName;
             st.symbolTable[curFun][symInd].type = resType;
-            st.symbolTable[curFun][symInd].cat = Category::VARIABLE;
+            st.symbolTable[curFun][symInd].cat = Category ::CONST;
             st.symbolTable[curFun][symInd].isTemp = true;
             st.symbolTable[curFun][symInd].isActive = false;
-            st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
-            st.vallVec[curFun] += typeSize(toSymTypeName(resType));
-
             helper = curTmpName;
             helper_Type = addType;
             inWhile = true;
@@ -770,8 +757,6 @@ int Parse::term() {
                 st.symbolTable[curFun][symInd].cat = Category ::CONST;
                 st.symbolTable[curFun][symInd].isTemp = true;
                 st.symbolTable[curFun][symInd].isActive = false;
-                st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
-                st.vallVec[curFun] += typeSize(toSymTypeName(resType));
                 return 1;
             } else {
                 cout << "mulop缺少表达式在第" << tokenVec[curIndex].line << "行" << endl;
@@ -882,14 +867,6 @@ int Parse::call() {
         auto symInd = st.symbolTable[curFun].size() - 1;
         st.symbolTable[curFun][symInd].name = curTmpName;
         st.symbolTable[curFun][symInd].isTemp = true;
-        int funIndex = st.funToName[curName];
-        Type retunType = st.symbolTable[funIndex][0].type;
-        st.symbolTable[curFun][symInd].type = retunType;
-        st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
-        st.vallVec[curFun] += toType(toSymTypeName(retunType));
-
-
-
         return 1;
     }
     curIndex = index;
@@ -945,9 +922,9 @@ void Parse::parse() {
 
 unsigned int Parse::typeSize(string curType) {
     if(curType == "int") {
-        return 1;
+        return 4;
     } else if(curType == "double" || curType == "float") {
-        return 2;
+        return 8;
     } else if(curType == "char") {
         return 1;
     }

@@ -25,10 +25,16 @@ public:
         name1 = n1;
         name2 = n2;
         res = r;
+
     }
     void print() {
         cout << setw(8) << op << setw(8) << name1 << setw(8) << name2 << setw(8) << res << endl;
     }
+    void printWithAct() {
+        cout << setw(8) << op << setw(8) << name1 << "(" << name1Act  << ")" << setw(8) << name2 << "(" << name2Act  << ")"
+        << setw(8) << res << "(" << resAct  << ")" << endl;
+    }
+
 
 };
 
