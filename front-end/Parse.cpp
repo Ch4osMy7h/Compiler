@@ -28,7 +28,6 @@ Parse::Parse(vector<QuadTuple> &quadVec, vector<Token> &tokenVec, SymbolTable &s
     this->curFun = 0;
     this->paraNum = 0;
     this->funCnt = 0;
-    this->vall = 0;
 }
 
 int Parse::program() {
@@ -204,7 +203,7 @@ int Parse::varDeclarationList() {
         curIndex++;
         return 1;
     } else {
-        cout << "变量声明缺少;" << tokenVec[curIndex].line - 1 << "行" << endl;
+        cout << "变量声明缺少;" << tokenVec[curIndex].line  << "行" << endl;
         exit(0);
     }
     return 1;
@@ -287,8 +286,6 @@ int Parse::funDeclaration() {
             st.symbolTable[curFun][symInd].vall = st.vallVec[curFun];
             st.vallVec[curFun] += typeSize(*iter_type);
 
-
-            vall += typeSize(*iter_type);
 //            st.symbolTable[curFun][symInd].vall = 0;
             quadVec.emplace_back("paradef", *iter_type, *iter_name, "__");
             iter_type++; iter_name++;
@@ -430,7 +427,7 @@ int Parse::expressionStmt() {
             curIndex++;
             return 1;
         } else {
-            cout << "表达式语句缺少;在第" << tokenVec[curIndex].line - 1 << "行"<< endl;
+            cout << "表达式语句缺少;在第" << tokenVec[curIndex].line << "行"<< endl;
             exit(0);
         }
     }
@@ -582,7 +579,6 @@ int Parse::expression() {
                 cout << "表达式错误在第" << tokenVec[curIndex].line << "行" << endl;
                 exit(0);
             }
-
             quadVec.emplace_back("=", tmpExp, "__", tmpVar);
             expName = tmpVar;
             expType = tmpExpType;

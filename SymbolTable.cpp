@@ -95,6 +95,7 @@ bool SymbolTable::isActive(string name, string curFun) {
             return i.isActive;
         }
     }
+
 //    cout << "未找到该变量" << endl;
     return false;
 }
