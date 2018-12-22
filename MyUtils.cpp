@@ -67,3 +67,15 @@ bool isGlobalName(string name, string curFun)
 {
     return symbolTable.getAddr(name, curFun).first;
 }
+
+pair<string, int> splitArray(string name)
+{
+    //将一个形如”asda[123213]“的字符串分为字母和数字两部分
+    int num;
+    int temp = name.find("[");
+    string str(name.begin(), name.begin() + temp);
+    istringstream is(string(name.begin() + temp + 1, name.end()));
+    is >> num;
+    return make_pair(str, num);
+}
+
