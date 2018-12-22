@@ -20,6 +20,8 @@ bool isTempName(string name, string curFun);
 bool isActive(string name,string curFun); //判断是否活跃
 void setActive(string name, string curFun, bool active); //设置活跃信息
 pair<bool, int> getAddrFromTable(string name, string curFun);
+int getFuncSize(string curFun);
+bool isGlobalName(string name, string curFun);
 
 string calculateNum(string op, string a, string b);
 

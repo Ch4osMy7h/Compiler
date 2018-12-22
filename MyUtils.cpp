@@ -56,3 +56,14 @@ pair<bool, int> getAddrFromTable(string name, string curFun)
 {
     return symbolTable.getAddr(name, curFun);
 }
+
+int getFuncSize(string curFun)
+{
+    return symbolTable.getFuncSize(curFun);
+}
+
+
+bool isGlobalName(string name, string curFun)
+{
+    return symbolTable.getAddr(name, curFun).first;
+}
