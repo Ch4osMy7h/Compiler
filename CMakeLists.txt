@@ -20,7 +20,7 @@ add_executable(Compiler
         QuadTuple.h
         Scanner.cpp
         Scanner.h
-        src.txt
+        dasdsa.txt
         SymbolTable.cpp
         SymbolTable.h
         Table.h

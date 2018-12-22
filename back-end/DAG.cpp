@@ -154,24 +154,6 @@ void optimize(vector<BasicBlock>& blocks)
 
 void test(vector<QuadTuple> quadVec)
 {
-    /*
-    vector<QuadTuple> quadVec = {QuadTuple("=", "3", " ", "t0"),
-                                 QuadTuple("*", "2", "t0", "t1"),
-                                 QuadTuple("+", "R", "r", "t2"),
-                                 QuadTuple("*", "t1", "t2", "A"),
-                                 QuadTuple("=", "A", " ", "B"),
-                                 QuadTuple("*", "2", "t0", "t3"),
-                                 QuadTuple("+", "R", "r", "t4"),
-                                 QuadTuple("*", "t3", "t4", "t5"),
-                                 QuadTuple("-", "R", "r", "t6"),
-                                 QuadTuple("*", "t5", "t6", "B")};
-    quadVec.clear();
-    ifstream in("1.txt");
-    string a, b, c, d;
-    while(in >> a) {
-        in >> b >> c >> d;
-        quadVec.push_back(QuadTuple(a, b, c, d));
-    }*/
     auto blocks = generateBlocks(quadVec);
     optimize(blocks);
     cout << blocks.size() << endl;
@@ -189,11 +171,5 @@ void test(vector<QuadTuple> quadVec)
     for(auto inst: insts) {
         inst.print();
     }
-    /*
-    for(auto s: a) {
-        auto temp = DAGToQuadTuple(optimizateOneBlock(s.block));
-        for(auto qt :temp) {
-            qt.print();
-        }
-    }*/
+
 }
