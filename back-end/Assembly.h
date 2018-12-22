@@ -21,7 +21,7 @@ struct Instruction
         if(name2.empty())
             cout << setw(8) << op << setw(8) << name1 << endl;
         else
-            cout << setw(8) << op << setw(8) << name1 + "," << setw(8) << name2 << endl;
+            cout << setw(8) << op << setw(17) << name1 + "," << setw(8) << name2 << endl;
     }
 };
 

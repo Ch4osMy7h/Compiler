@@ -98,6 +98,7 @@ public:
     bool isTempName(string name, string curFun); //判断是否是临时变量
     bool isActive(string name,string curFun); //判断是否活跃
     void setActive(string name, string curFun, bool active); //设置活跃信息
+    int getFuncSize(string curFun);
     pair<bool, int> getAddr(string name, string curFun); //当前作用域搜索函数
 
     SymbolTable() {
