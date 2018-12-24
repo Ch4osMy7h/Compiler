@@ -17,18 +17,25 @@ int main(int argc, char* argv[]) {
     string outputLexDir = "../lex.txt";
     string outputQuadDir = "../quad.txt";
     string outputAsmDir = "../asm.txt";
-    if(argc != 8) {
+    string outputDAGDir;
+    string outputInstDir;
+    string outputTableDir;
+    if(argc != 12) {
         cout << "Invaild filename" << endl;
         return 0;
     } else {
         srcfileName = argv[1];
         outputLexDir = argv[3];
         outputQuadDir = argv[5];
-        outputAsmDir = argv[7];
+        outputDAGDir = argv[7];
+        outputInstDir = argv[9];
+        outputTableDir = argv[11];
         cout << "srcpath: " << srcfileName << endl;
         cout << "lexPath: " << outputLexDir << endl;
         cout << "quadPath: " << outputQuadDir << endl;
-        cout << "targetpath" << outputAsmDir << endl;
+        cout << "targetpath: " << outputAsmDir << endl;
+        cout << "outputDAGDir: " << outputDAGDir << endl;
+        cout << "outputInstDir: " << outputInstDir << endl;
     }
     KeyWordTable keyWordTable;
     IdentiferTable identiferTable;
@@ -57,18 +64,32 @@ int main(int argc, char* argv[]) {
     Parse parse(quadVec, tokenVec, symbolTable, keyWordTable, identiferTable, delimiterTable, intTable, floatTable, charTable, stringTable);
     parse.parse();
     parse.print(outputQuadDir);
-
-    symbolTable.print();
+    test(quadVec, outputDAGDir, outputInstDir);
+    //symbolTable.print();
     int index = 0;
     int cur;
+    ofstream out;
+    out.open(outputTableDir, ios::out | ios::trunc);
     for (auto &i : symbolTable.symbolTable) {
-        cout << index++  << ":" << endl;
+        out << index++  << ":" << endl;
         cur = 0;
         for (auto &j : i) {
-            if(j.name == "a") cout << j.type << endl;
-            cout << ++cur << "\t" << j.name << "\t" << parse.toSymTypeName(j.type) <<  "\t" <<  parse.toCatName(j.cat) << "\t" << j.vall<< endl;
+            out  << j.name << " " << parse.toSymTypeName(j.type) <<  " " <<  parse.toCatName(j.cat) << " " << j.vall<< endl;
         }
     }
+    out << "数组表" << endl;
+    out << "Low " <<"up " << "clen " << "type " << endl;
+    for (auto &i : symbolTable.arrayTableVec) {
+        out << i.low << " " << i.up << " " << i.clen << " " << parse.toSymTypeName(i.type) << endl;
+    }
+
+
+    out << "函数表" << endl;
+//    out << "Low " <<"up " << "clen " << "type " << endl;
+//    for (auto &i : symbolTable.functionTableVec) {
+//        out << i.paramNum << " " << i. << " " << i.clen << " " << parse.toSymTypeName(i.type) << endl;
+//    }
+    out.close();
 //    test(quadVec);
     //cout << symbolTable.isTempName("t5", "main") << endl;
 //    cout << symbolTable.getAddr("a", "main").first << " " << symbolTable.getAddr("a", "main").second << endl;

@@ -15,13 +15,13 @@ struct Instruction
     Instruction(string op, string name1, string name2, string label): op(op), name1(name1), name2(name2), label(label)  {}
     Instruction(string op, string name1, string name2): op(op), name1(name1), name2(name2), label()  {}
     Instruction() = default;
-    void print() {
-        cout.setf(std::ios::left);
-        cout << setw(8) << label;
+    void print(ofstream& outFirst) {
+        outFirst.setf(std::ios::left);
+        outFirst << setw(8) << label;
         if(name2.empty())
-            cout << setw(8) << op << setw(8) << name1 << endl;
+            outFirst << setw(8) << op << setw(8) << name1 << endl;
         else
-            cout << setw(8) << op << setw(17) << name1 + "," << setw(8) << name2 << endl;
+            outFirst << setw(8) << op << setw(17) << name1 + "," << setw(8) << name2 << endl;
     }
 };
 

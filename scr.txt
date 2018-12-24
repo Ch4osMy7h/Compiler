@@ -1,9 +1,0 @@
-int main(){
-    int a, b, x, y, c;
-    a = 4 + 23;
-    b = a * x + (x * y);
-    c = x * y + b;
-
-    return 0;
-}
-

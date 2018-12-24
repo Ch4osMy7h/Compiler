@@ -13,7 +13,7 @@
 using namespace std;
 
 
-void test(vector<QuadTuple> quadVec);
+void test(vector<QuadTuple> quadVec, string fileNameDAG, string fileNameInst);
 
 struct DAGNode
 {

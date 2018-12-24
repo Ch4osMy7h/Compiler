@@ -152,24 +152,30 @@ void optimize(vector<BasicBlock>& blocks)
 
 
 
-void test(vector<QuadTuple> quadVec)
+void test(vector<QuadTuple> quadVec, string fileNameBlcok, string fileNameInst)
 {
+    ofstream out;
+    out.open(fileNameBlcok, ios::out | ios::trunc);
     auto blocks = generateBlocks(quadVec);
     optimize(blocks);
-    cout << blocks.size() << endl;
+    out << blocks.size() << endl;
     int i = 0;
     for(auto& block: blocks) {
-        cout << "第" << i++ << "个基本块:" << endl;
-        cout << "所属函数名：" << block.curFun << endl;
+        out << "第" << i++ << "个基本块:" << endl;
+        out << "所属函数名：" << block.curFun << endl;
         activeInfo(block);
-
         for(auto qt: block.block) {
-            qt.printWithAct();
+            qt.printWithAct(out);
         }
     }
+    out.close();
+
+
+    ofstream outInst;
+    outInst.open(fileNameInst, ios::out | ios::trunc);
     auto insts = geneASM(blocks);;
     for(auto inst: insts) {
-        inst.print();
+        inst.print(outInst);
     }
-
+    outInst.close();
 }

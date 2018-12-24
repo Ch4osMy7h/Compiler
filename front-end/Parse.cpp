@@ -548,6 +548,7 @@ int Parse::returnStmt() {
         if(tokenVec[curIndex].type == DELIMTER && delimiterTable.index[";"] == tokenVec[curIndex].id) {
             curIndex++;
         } else {
+            cout << tokenVec[curIndex].name;
             cout<<"return 语句缺少';'在第" << tokenVec[curIndex].line -1 << "行" << endl;
             exit(0);
         }
@@ -777,7 +778,7 @@ int Parse::term() {
                 st.vallVec[curFun] += typeSize(toSymTypeName(resType));
                 return 1;
             } else {
-                cout << "mulop缺少表达式在第" << tokenVec[curIndex].line << "行" << endl;
+                cout << "mulop缺少表达式在第" << tokenVec[curIndex].line+1 << "行" << endl;
                 exit(0);
             }
         }
